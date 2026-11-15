@@ -4,12 +4,10 @@
 // la app funciona en modo prueba: guarda todo solo en este dispositivo.
 export const CONFIG = {
   CLIENT_ID: '632485670315-44h0reldorhd0pc09qvivhc9qdj3cdhv.apps.googleusercontent.com',
-  // Sin acceso al correo. «spreadsheets» es para la hoja común del Grupo Portland:
-  // la crea el host y la comparte con los invitados desde Drive.
+  // Sin acceso al correo: solo los archivos que crea la app y su archivo oculto de datos.
   SCOPES: [
     'https://www.googleapis.com/auth/drive.file',
     'https://www.googleapis.com/auth/drive.appdata',
-    'https://www.googleapis.com/auth/spreadsheets',
   ].join(' '),
   ARCHIVO_DATOS: 'portland-lab-datos.json',
   // Archivo de datos de Luria Lab (mismo ID de cliente → misma carpeta oculta): solo se lee para importar fichas

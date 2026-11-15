@@ -1,12 +1,13 @@
-// Portland Lab · Grupo Portland y Hexaflex
+// Portland Lab · Diario, Hexaflex y Grupo Portland
 import * as S from './store.js';
 import * as G from './google.js';
-import * as P from './portland.js';
+import { vPortland } from './portland.js';
+import * as DI from './diario.js';
 import * as H from './hexaflex.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -75,53 +76,35 @@ window.addEventListener('online', () => { if (G.conectado() && pendiente) subir(
 
 // ======================= Ajustes =======================
 function vAjustes() {
-  const s = S.datos(); const g = P.grupoActivo();
-  let invitada = false; try { invitada = localStorage.getItem('pl-demo-invitado') === '1'; } catch {}
   const cuenta = !G.configurado()
-    ? `<div class="aviso-caja">${icon('candado', 18)}<span><b>Modo prueba:</b> la app no tiene ID de cliente de Google y guarda todo solo en este dispositivo.</span></div>
-       <label class="fila-check"><input type="checkbox" id="aj-invitada" ${invitada ? 'checked' : ''}> Ver el grupo como invitada (para comprobar qué ven los demás)</label>`
+    ? `<div class="aviso-caja">${icon('candado', 18)}<span><b>Modo prueba:</b> la app no tiene ID de cliente de Google y guarda todo solo en este dispositivo.</span></div>`
     : G.conectado()
-      ? `<div class="fila-entre"><span class="pequeno"><span class="c-verde" style="font-weight:700">● Conectado</span> · tus fichas se guardan en tu Drive</span><button class="btn pequeno" data-act="desconectar">Desconectar</button></div>`
-      : `<p class="pequeno suave" style="line-height:1.5">Conecta para guardar tus fichas en tu Drive y abrir la hoja del grupo.</p><button class="btn primario" data-act="conectar">Conectar con Google</button>`;
+      ? `<div class="fila-entre"><span class="pequeno"><span class="c-verde" style="font-weight:700">● Conectado</span> · tus datos se guardan en tu Drive</span><button class="btn pequeno" data-act="desconectar">Desconectar</button></div>`
+      : `<p class="pequeno suave" style="line-height:1.5">Conecta para guardar tu diario y tus fichas en tu Drive y tenerlos en todos tus dispositivos.</p><button class="btn primario" data-act="conectar">Conectar con Google</button>`;
   return {
-    html: `<div class="pantalla">${volver('#/grupo', 'Ajustes')}
-    <section class="tarjeta"><div class="campo"><label for="aj-nombre">Tu nombre</label><input type="text" id="aj-nombre" maxlength="60" value="${esc(s.ajustes.nombre)}" placeholder="Como te verá el grupo"><span class="ayuda">Es el nombre que aparece al apuntarte y en tu feedback.</span></div></section>
+    html: `<div class="pantalla">${volver('#/diario', 'Ajustes')}
     <h2 class="etiqueta-grupo">Cuenta de Google</h2>
     <section class="tarjeta">${cuenta}</section>
-    <h2 class="etiqueta-grupo">Tus grupos</h2>
-    <section class="tarjeta lista">${s.grupos.map((x) => `<div class="fila"><span class="item-texto"><span class="item-titulo">${esc(x.nombre || 'Grupo')}${x.id === g?.id ? ' <span class="insignia ok">Abierto</span>' : ''}</span><span class="item-sub">${x.host ? 'Eres el host' : 'Invitado'}${x.unido ? ` · desde el ${esc(fmtCorta(x.unido))}` : ''}</span></span>
-      <span style="display:flex;gap:4px">${G.configurado() ? `<a class="icono-btn" href="${esc(G.enlaceHoja(x.id))}" target="_blank" rel="noopener" aria-label="Abrir la hoja de ${esc(x.nombre)}">${icon('hoja', 18)}</a>` : ''}<button class="icono-btn" data-act="grupo-quitar" data-id="${esc(x.id)}" aria-label="Dejar de ver ${esc(x.nombre)}">${icon('papelera', 18)}</button></span></div>`).join('') || '<p class="vacio">Aún no sigues ningún grupo.</p>'}</section>
     <h2 class="etiqueta-grupo">Hexaflex</h2>
     <section class="tarjeta"><p class="pequeno suave" style="line-height:1.5">Trae las fichas, tus notas y la bibliografía que ya tienes en Luria Lab. Luria Lab no se modifica.</p>
-      <button class="btn" data-act="importar-luria" ${G.configurado() ? '' : 'disabled'}>${icon('descargar', 18)}Traer mis fichas de Luria Lab</button>
-      ${G.configurado() ? '' : '<span class="mini suave">Necesita la conexión con Google.</span>'}</section>
+      <button class="btn" data-act="importar-luria" ${G.configurado() ? '' : 'disabled'}>${icon('descargar', 18)}Traer mis fichas de Luria Lab</button></section>
     <h2 class="etiqueta-grupo">Datos</h2>
     <section class="tarjeta">
       <button class="btn" data-act="exportar">${icon('descargar', 18)}Descargar una copia de mis datos</button>
       <button class="btn peligro" data-act="borrar-todo">${icon('papelera', 18)}Cerrar sesión y borrar este dispositivo</button>
-      <span class="mini suave" style="line-height:1.45">La hoja del grupo no se borra: sigue en el Drive del host.</span>
     </section>
     <p class="mini suave" style="text-align:center">Portland Lab ${VERSION}</p>
     </div>${nav('ajustes')}`,
-    mount(r) {
-      const n = r.querySelector('#aj-nombre');
-      n.addEventListener('change', () => { S.actualizar((s2) => { s2.ajustes.nombre = n.value.trim(); }); P.olvidarCarga(); toast('Nombre guardado.'); });
-      r.querySelector('#aj-invitada')?.addEventListener('change', (e) => { LS.set('pl-demo-invitado', e.target.checked ? '1' : null); P.olvidarCarga(); toast(e.target.checked ? 'Ahora ves el grupo como invitada.' : 'Ahora ves el grupo como host.'); });
-    },
   };
 }
 
 // ======================= Acciones (clics) =======================
 const acciones = {
   ...H.accionesHx,
-  ...P.accionesPl,
-  conectar: (b) => conCarga(b, async () => { await conectarYSincronizar(); P.olvidarCarga(); toast('Conectado.'); render(); }),
+  ...DI.accionesDiario,
+  conectar: (b) => conCarga(b, async () => { await conectarYSincronizar(); toast('Conectado.'); render(); }),
   'sync-reintentar': () => subir(),
-  desconectar: async () => { await G.desconectar(); P.olvidarCarga(); toast('Desconectado: la app ya no tiene permiso en tu Google.'); render(); },
-  'grupo-quitar': (b) => confirmar('¿Dejar de ver este grupo?', 'Desaparece de tu app. La hoja sigue en el Drive del host y puedes volver con el enlace de invitación.', 'Dejar de verlo', () => {
-    S.actualizar((s) => { s.grupos = s.grupos.filter((x) => x.id !== b.dataset.id); if (s.grupoActivo === b.dataset.id) s.grupoActivo = s.grupos[0]?.id || null; });
-    P.olvidarCarga(); render();
-  }),
+  desconectar: async () => { await G.desconectar(); toast('Desconectado: la app ya no tiene permiso en tu Google.'); render(); },
   'importar-luria': (b) => conCarga(b, async () => {
     await ctx.google();
     const luria = await G.leerDatosLuria();
@@ -132,11 +115,11 @@ const acciones = {
     render();
   }),
   exportar: () => descargar(new Blob([JSON.stringify(S.datos(), null, 2)], { type: 'application/json' }), `portland-lab-${new Date().toISOString().slice(0, 10)}.json`),
-  'borrar-todo': () => confirmar('¿Cerrar sesión y borrar este dispositivo?', 'Se quita el permiso de la app en tu Google y se borra lo guardado aquí. Tus fichas siguen en tu Drive y vuelven al conectar.', 'Cerrar sesión y borrar', async () => {
+  'borrar-todo': () => confirmar('¿Cerrar sesión y borrar este dispositivo?', 'Se quita el permiso de la app en tu Google y se borra lo guardado aquí. Tu diario y tus fichas siguen en tu Drive y vuelven al conectar.', 'Cerrar sesión y borrar', async () => {
     await G.desconectar();
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('pl-') || k.startsWith('portland-lab')) localStorage.removeItem(k); } catch {}
     try { indexedDB.deleteDatabase('portland-lab'); } catch {}
-    S.olvidarTodo(); P.olvidarCarga(); location.hash = '#/grupo'; render();
+    S.olvidarTodo(); location.hash = '#/diario'; render();
   }),
 };
 app().addEventListener('click', (e) => {
@@ -146,13 +129,10 @@ app().addEventListener('click', (e) => {
 
 // ======================= Rutas =======================
 const rutas = [
-  [/^#\/?(grupo)?$/, () => P.vGrupo()],
-  [/^#\/grupo\/s\/([^/]+)\/editar$/, (id) => P.vSesionEditar(decodeURIComponent(id))],
-  [/^#\/grupo\/s\/([^/]+)\/rondas$/, (id) => P.vRondas(decodeURIComponent(id))],
-  [/^#\/grupo\/s\/([^/]+)\/directo$/, (id) => P.vDirecto(decodeURIComponent(id))],
-  [/^#\/grupo\/s\/([^/]+)\/r\/([^/]+)$/, (id, r) => P.vFeedback(decodeURIComponent(id), decodeURIComponent(r))],
-  [/^#\/grupo\/s\/([^/]+)$/, (id) => P.vSesion(decodeURIComponent(id))],
-  [/^#\/unirse\/([^/]+)$/, (id) => P.vUnirse(decodeURIComponent(id))],
+  [/^#\/?(diario)?$/, () => DI.vDiario()],
+  [/^#\/diario\/nueva$/, (p) => DI.vEditar('nueva', p)],
+  [/^#\/diario\/editar\/([^/]+)$/, (id, p) => DI.vEditar(decodeURIComponent(id), p)],
+  [/^#\/diario\/e\/([^/]+)$/, (id) => DI.vEntrada(decodeURIComponent(id))],
   [/^#\/hexaflex$/, () => H.vHexaflex()],
   [/^#\/hexaflex\/modelo$/, () => H.vHxModelo()],
   [/^#\/hexaflex\/p\/(\w+)$/, (k) => H.vHxProceso(k)],
@@ -160,32 +140,32 @@ const rutas = [
   [/^#\/hexaflex\/editar\/(.+)$/, (id, p) => H.vHxEditar(decodeURIComponent(id), p)],
   [/^#\/hexaflex\/banco$/, () => H.vHxBanco()],
   [/^#\/biblio$/, () => H.vBiblio()],
+  [/^#\/portland$/, () => vPortland()],
   [/^#\/ajustes$/, () => vAjustes()],
 ];
 
 // ---------- Formato de escritorio (desde 960 px de ancho): menú lateral ----------
 const ESCRITORIO = window.matchMedia('(min-width: 960px)');
 ESCRITORIO.addEventListener?.('change', () => render());
-const seccionDe = (ruta) => (ruta.startsWith('#/hexaflex') || ruta.startsWith('#/biblio') ? 'hexaflex' : ruta.startsWith('#/ajustes') ? 'ajustes' : 'grupo');
+const seccionDe = (ruta) => (ruta.startsWith('#/hexaflex') || ruta.startsWith('#/biblio') ? 'hexaflex' : ruta.startsWith('#/portland') ? 'portland' : ruta.startsWith('#/ajustes') ? 'ajustes' : 'diario');
 function lateral(sec) {
   const enlace = ([r, t, i]) => `<a href="#/${r}" class="lat-enlace ${r === sec ? 'activo' : ''}" ${r === sec ? 'aria-current="page"' : ''}>${icon(i, 20)}<span>${t}</span></a>`;
   const estado = !G.configurado() ? `<span class="lat-estado">${icon('candado', 14)}Modo prueba · solo este dispositivo</span>`
     : barraEstado() || (G.conectado() ? '<span class="lat-estado ok"><i></i>Conectado a Google</span>' : '<button class="btn pequeno" data-act="conectar" style="width:100%">Conectar con Google</button>');
-  return `<aside class="lateral" aria-label="Menú"><a href="#/grupo" class="lat-marca">Portland Lab</a>
+  return `<aside class="lateral" aria-label="Menú"><a href="#/diario" class="lat-marca">Portland Lab</a>
     <nav class="lat-grupo">${NAV.map(enlace).join('')}</nav><div class="lat-pie">${estado}</div></aside>`;
 }
 
 function render() {
-  const [ruta, qs] = (location.hash || '#/grupo').split('?');
+  const [ruta, qs] = (location.hash || '#/diario').split('?');
   const params = new URLSearchParams(qs || '');
   for (const [re, fn] of rutas) {
     const m = ruta.match(re);
     if (!m) continue;
     const v = fn(...m.slice(1), params);
-    const directo = /\/directo$/.test(ruta);
-    if (!ESCRITORIO.matches || directo) {
+    if (!ESCRITORIO.matches) {
       app().classList.remove('es-escritorio');
-      app().innerHTML = (directo ? '' : barraEstado() || '<span class="estado-vacio"></span>') + v.html;
+      app().innerHTML = (barraEstado() || '<span class="estado-vacio"></span>') + v.html;
       v.mount?.(app());
       return;
     }
@@ -194,7 +174,7 @@ function render() {
     v.mount?.(app().querySelector('.principal'));
     return;
   }
-  location.hash = '#/grupo';
+  location.hash = '#/diario';
 }
 ctx.render = render;
 

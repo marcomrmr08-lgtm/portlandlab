@@ -1,6 +1,5 @@
-// Datos personales de Portland Lab (Hexaflex, bibliografía, grupos a los que perteneces).
+// Datos de Portland Lab: diario, Hexaflex, bibliografía y notas del Grupo Portland.
 // Se guardan siempre en este dispositivo y, si hay conexión con Google, en un archivo oculto de tu Drive.
-// Los datos del Grupo Portland NO van aquí: viven en la hoja común del grupo (ver grupo.js).
 import { FICHAS_BASE, BIBLIO_BASE } from './hexaflexBase.js';
 
 const CLAVE = 'portland-lab-v1';
@@ -14,8 +13,8 @@ function porDefecto() {
     ajustes: { nombre: '', carpetas: {} },
     hexaflex: { modelo: {}, procesos: {}, fichas: [], notas: {} },
     biblio: null,
-    grupos: [],
-    grupoActivo: null,
+    diario: [],
+    portland: { notas: '' },
     borrados: [],
   };
 }
@@ -38,7 +37,7 @@ function sanear(s) {
   sanearIds(s);
   if (s.hexaflex) s.hexaflex.fichas = conId(s.hexaflex.fichas);
   if (s.biblio) s.biblio = conId(s.biblio);
-  s.grupos = conId(s.grupos);
+  s.diario = conId(s.diario).filter((e) => typeof e.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.fecha));
   return s;
 }
 
@@ -48,7 +47,10 @@ function completar(s) {
   s.ajustes = { ...d.ajustes, ...(s.ajustes || {}) };
   s.ajustes.carpetas = s.ajustes.carpetas || {};
   if (!Array.isArray(s.borrados)) s.borrados = [];
-  if (!Array.isArray(s.grupos)) s.grupos = [];
+  if (!Array.isArray(s.diario)) s.diario = [];
+  for (const e of s.diario) { e.tipo = e.tipo === 'idea' ? 'idea' : 'reflexion'; e.procesos = Array.isArray(e.procesos) ? e.procesos : []; }
+  s.portland = s.portland && typeof s.portland === 'object' ? s.portland : { notas: '' };
+  delete s.grupos; delete s.grupoActivo;
   if (!s.hexaflex) s.hexaflex = d.hexaflex;
   const hx = s.hexaflex;
   hx.modelo = hx.modelo || {}; hx.procesos = hx.procesos || {}; hx.notas = hx.notas || {};
@@ -61,8 +63,6 @@ function completar(s) {
   }
   for (const f of hx.fichas) { f.audios = f.audios || []; f.videos = f.videos || []; f.exp = f.exp || {}; f.notasExp = f.notasExp || []; f.procesos = Array.isArray(f.procesos) ? f.procesos : []; }
   if (!Array.isArray(s.biblio)) s.biblio = BIBLIO_BASE.map((b) => ({ ...b }));
-  if (s.grupoActivo && !s.grupos.some((g) => g.id === s.grupoActivo)) s.grupoActivo = null;
-  if (!s.grupoActivo && s.grupos.length) s.grupoActivo = s.grupos[0].id;
   return s;
 }
 
@@ -109,8 +109,8 @@ export function fusionar(local, remoto) {
     ajustes,
     hexaflex: { ...R.hexaflex, ...L.hexaflex, notas, fichas: unir(R.hexaflex.fichas, L.hexaflex.fichas) },
     biblio: unir(R.biblio, L.biblio),
-    grupos: unir(R.grupos, L.grupos),
-    grupoActivo: base.grupoActivo || otro.grupoActivo,
+    diario: unir(R.diario, L.diario),
+    portland: { notas: base.portland?.notas || otro.portland?.notas || '' },
     borrados: [...borrados],
   };
 }

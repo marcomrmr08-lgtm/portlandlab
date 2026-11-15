@@ -1,9 +1,9 @@
 {
   "name": "Portland Lab",
   "short_name": "Portland Lab",
-  "description": "Grupo Portland: práctica experiencial de ACT entre compañeros, con banco Hexaflex.",
+  "description": "Diario de prácticas, banco Hexaflex de ACT y Grupo Portland.",
   "lang": "es",
-  "start_url": "./#/grupo",
+  "start_url": "./#/diario",
   "scope": "./",
   "display": "standalone",
   "background_color": "#EEF1F7",

@@ -1,12 +1,10 @@
 // Conexión con Google: inicio de sesión, Drive y Sheets. Sin acceso al correo.
 // drive.file: solo los archivos que crea la app · drive.appdata: su archivo oculto de datos
-// spreadsheets: la hoja común del Grupo Portland (la del host, compartida con los invitados)
 import { CONFIG } from './config.js';
 
 let token = null;
 let caduca = 0;
 let clienteToken = null;
-let yo = null; // { nombre, email } de la cuenta conectada
 
 export const configurado = () => Boolean(CONFIG.CLIENT_ID);
 export const conectado = () => Boolean(token) && Date.now() < caduca - 60_000;
@@ -39,13 +37,12 @@ export async function conectar() {
     clienteToken.error_callback = (e) => rej(new Error(e?.type === 'popup_closed' ? 'Se cerró la ventana de Google.' : 'No se pudo conectar con Google.'));
     clienteToken.requestAccessToken({ prompt: '' });
   });
-  yo = null;
 }
 
 // Quita el permiso de la app en la cuenta de Google (no solo olvida la sesión)
 export function desconectar() {
   const t = token;
-  token = null; caduca = 0; yo = null;
+  token = null; caduca = 0;
   try { localStorage.removeItem('pl-google'); } catch {}
   if (!t || !window.google?.accounts?.oauth2) return Promise.resolve();
   return new Promise((res) => { google.accounts.oauth2.revoke(t, () => res()); setTimeout(res, 4000); });
@@ -58,13 +55,6 @@ async function api(url, opts = {}) {
   if (r.status === 401) { token = null; throw new Error('La sesión de Google ha caducado. Pulsa «Conectar con Google» y repite.'); }
   if (!r.ok) {
     let msg = ''; try { msg = (await r.json()).error?.message || ''; } catch {}
-    if (/sheets\.googleapis\.com|Sheets API/i.test(msg) && /disabled|not been used|has not been/i.test(msg)) {
-      throw new Error('Falta activar la «Google Sheets API» en Google Cloud. Actívala y vuelve a intentarlo en un par de minutos.');
-    }
-    if (r.status === 403 && /permission|caller does not have/i.test(msg)) {
-      throw new Error('No tienes acceso a la hoja del grupo. Pide al host que la comparta con tu correo de Google como «Editor».');
-    }
-    if (r.status === 404) throw new Error('No se encuentra la hoja del grupo. Puede que el host la haya borrado o que el enlace esté incompleto.');
     throw new Error(`Google respondió con un error (${r.status})${msg ? ': ' + msg : ''}`);
   }
   return r;
@@ -74,15 +64,7 @@ const DRIVE = 'https://www.googleapis.com/drive/v3';
 const SUBIDA = 'https://www.googleapis.com/upload/drive/v3/files';
 
 export const enlaceArchivo = (id) => `https://drive.google.com/file/d/${id}/view`;
-export const enlaceHoja = (id) => `https://docs.google.com/spreadsheets/d/${id}/edit`;
 
-// Nombre y correo de la cuenta conectada (sirven para saber quién se apunta)
-export async function quienSoy() {
-  if (yo) return yo;
-  const r = await json(`${DRIVE}/about?fields=user(displayName,emailAddress)`);
-  yo = { nombre: r.user?.displayName || '', email: (r.user?.emailAddress || '').toLowerCase() };
-  return yo;
-}
 
 async function multipart(meta, cuerpo, tipo, id) {
   const b = 'pl' + Math.random().toString(36).slice(2);
@@ -155,51 +137,8 @@ export async function subirGrande(nombre, blob, tipo, padre) {
   return (await r2.json()).id;
 }
 export async function borrarArchivo(id) {
-  try { await api(`${DRIVE}/files/${id}`, { method: 'DELETE' }); } catch (e) { if (!/\((404|410)\)|No se encuentra/.test(e.message)) throw e; }
+  try { await api(`${DRIVE}/files/${id}`, { method: 'DELETE' }); } catch (e) { if (!/\((404|410)\)/.test(e.message)) throw e; }
 }
 export async function descargarArchivo(id) {
   return (await api(`${DRIVE}/files/${id}?alt=media`)).arrayBuffer();
-}
-
-// ---------- Google Sheets: la hoja común del grupo ----------
-const SHEETS = 'https://sheets.googleapis.com/v4/spreadsheets';
-const rango = (r) => encodeURIComponent(r);
-
-// Crea una hoja de cálculo vacía dentro de la carpeta de la app y le pone las pestañas indicadas
-export async function crearHoja(nombre, padre, pestanasNuevas) {
-  const meta = { name: nombre, mimeType: 'application/vnd.google-apps.spreadsheet', parents: [padre] };
-  const id = (await json(`${DRIVE}/files?fields=id`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(meta) })).id;
-  const info = await json(`${SHEETS}/${id}?fields=sheets.properties(sheetId,title)`);
-  const requests = pestanasNuevas.map((title) => ({ addSheet: { properties: { title } } }));
-  for (const s of info.sheets || []) requests.push({ deleteSheet: { sheetId: s.properties.sheetId } });
-  await json(`${SHEETS}/${id}:batchUpdate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requests }) });
-  return id;
-}
-export async function titulosPestanas(id) {
-  const r = await json(`${SHEETS}/${id}?fields=sheets.properties.title`);
-  return (r.sheets || []).map((s) => s.properties.title);
-}
-export async function anadirPestanas(id, titulos) {
-  if (!titulos.length) return;
-  await json(`${SHEETS}/${id}:batchUpdate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: titulos.map((title) => ({ addSheet: { properties: { title } } })) }) });
-}
-// Lee varios rangos de una vez. Devuelve { 'Pestaña': [[fila], …] }
-export async function leerRangos(id, pestanas) {
-  const qs = pestanas.map((p) => `ranges=${rango(`'${p}'!A1:Z`)}`).join('&');
-  const r = await json(`${SHEETS}/${id}/values:batchGet?${qs}&majorDimension=ROWS`);
-  const out = {};
-  (r.valueRanges || []).forEach((vr, i) => { out[pestanas[i]] = vr.values || []; });
-  return out;
-}
-// Añade filas al final (RAW: lo escrito se guarda como texto, nunca como fórmula)
-export async function anadirFilas(id, pestana, filas) {
-  await json(`${SHEETS}/${id}/values/${rango(`'${pestana}'!A1`)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ values: filas }),
-  });
-}
-// Sobrescribe filas concretas: [{ pestana, fila (1 = cabecera), valores: [] }]
-export async function escribirFilas(id, cambios) {
-  if (!cambios.length) return;
-  const data = cambios.map((c) => ({ range: `'${c.pestana}'!A${c.fila}`, values: [c.valores] }));
-  await json(`${SHEETS}/${id}/values:batchUpdate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ valueInputOption: 'RAW', data }) });
 }
