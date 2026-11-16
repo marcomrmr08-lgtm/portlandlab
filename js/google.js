@@ -109,7 +109,7 @@ async function crearCarpeta(nombre, padre) {
   const meta = { name: nombre, mimeType: 'application/vnd.google-apps.folder', ...(padre ? { parents: [padre] } : {}) };
   return (await json(`${DRIVE}/files?fields=id`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(meta) })).id;
 }
-// ruta: ['Portland Lab', 'Hexaflex', 'Audios']; cache: objeto donde se guardan los ids
+// ruta: ['Flexeo', 'Hexaflex', 'Audios']; cache: objeto donde se guardan los ids
 export async function carpeta(ruta, cache) {
   let padre = null;
   for (let i = 0; i < ruta.length; i++) {

@@ -1,4 +1,4 @@
-// Portland Lab · Diario (con lecturas), Hexaflex y Grupo Portland
+// Flexeo · Diario (con lecturas), Hexaflex y Grupo Portland
 import * as S from './store.js';
 import * as G from './google.js';
 import * as P from './portland.js';
@@ -8,7 +8,7 @@ import * as H from './hexaflex.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -94,7 +94,7 @@ function vAjustes() {
       <button class="btn" data-act="exportar">${icon('descargar', 18)}Descargar una copia de mis datos</button>
       <button class="btn peligro" data-act="borrar-todo">${icon('papelera', 18)}Cerrar sesión y borrar este dispositivo</button>
     </section>
-    <p class="mini suave" style="text-align:center">Portland Lab ${VERSION}</p>
+    <p class="mini suave" style="text-align:center">Flexeo ${VERSION}</p>
     </div>${nav('ajustes')}`,
   };
 }
@@ -160,7 +160,7 @@ function lateral(sec) {
   const enlace = ([r, t, i]) => `<a href="#/${r}" class="lat-enlace ${r === sec ? 'activo' : ''}" ${r === sec ? 'aria-current="page"' : ''}>${icon(i, 20)}<span>${t}</span></a>`;
   const estado = !G.configurado() ? `<span class="lat-estado">${icon('candado', 14)}Modo prueba · solo este dispositivo</span>`
     : barraEstado() || (G.conectado() ? '<span class="lat-estado ok"><i></i>Conectado a Google</span>' : '<button class="btn pequeno" data-act="conectar" style="width:100%">Conectar con Google</button>');
-  return `<aside class="lateral" aria-label="Menú"><a href="#/diario" class="lat-marca">Portland Lab</a>
+  return `<aside class="lateral" aria-label="Menú"><a href="#/diario" class="lat-marca">Flexeo</a>
     <nav class="lat-grupo">${NAV.map(enlace).join('')}</nav><div class="lat-pie">${estado}</div></aside>`;
 }
 

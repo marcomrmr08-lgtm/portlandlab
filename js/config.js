@@ -1,4 +1,4 @@
-// Configuración de Portland Lab.
+// Configuración de Flexeo.
 // CLIENT_ID: el mismo «ID de cliente» de Google Cloud que Luria Lab (las dos apps viven en
 // https://marcomrmr08-lgtm.github.io, que ya es un origen autorizado). Mientras esté vacío,
 // la app funciona en modo prueba: guarda todo solo en este dispositivo.
@@ -12,6 +12,6 @@ export const CONFIG = {
   ARCHIVO_DATOS: 'portland-lab-datos.json',
   // Archivo de datos de Luria Lab (mismo ID de cliente → misma carpeta oculta): solo se lee para importar fichas
   ARCHIVO_LURIA: 'luria-lab-datos.json',
-  CARPETA_RAIZ: 'Portland Lab',
+  CARPETA_RAIZ: 'Flexeo',
   URL_APP: 'https://marcomrmr08-lgtm.github.io/portlandlab/',
 };

@@ -1,12 +1,12 @@
 @font-face { font-family: 'Plus Jakarta Sans'; src: url('vendor/fuentes/plus-jakarta-sans.woff') format('woff');
   font-weight: 200 800; font-style: normal; font-display: swap; }
 :root {
-  --fondo: #EEF1F7; --superficie: #FFFFFF; --tinta: #1B1E30; --suave: #5A5D6C; --tenue: #7E8090;
-  --linea: #DEE2ED; --linea2: #CDD3E2; --separador: #E7EAF2;
-  --verde: #232B5C; --verde-osc: #171D45; --verde-cl: #E8E8F1;
+  --fondo: #F7F1EC; --superficie: #FFFFFF; --tinta: #2A1D16; --suave: #6B5C52; --tenue: #8C7C71;
+  --linea: #EADFD6; --linea2: #DCCBBE; --separador: #F0E7E0;
+  --verde: #B84A18; --verde-osc: #8C3510; --verde-cl: #FBE6DA;
   --exito: #2E6A5B; --exito-osc: #1F4C41; --exito-cl: #E3EFEA;
   --azul: #2B5784; --azul-cl: #E4ECF5; --morado: #634585; --morado-cl: #EEE8F4;
-  --ambar: #8A5310; --ambar-cl: #F8ECDB; --gris: #3E4742; --gris-cl: #EFF1F6;
+  --ambar: #8A5310; --ambar-cl: #F8ECDB; --gris: #4A3F38; --gris-cl: #F4EEE9;
   --error: #A3321F; --radio: 12px;
   color-scheme: light;
 }
@@ -80,15 +80,15 @@ input[type=text], input[type=email], input[type=date], input[type=time], input[t
   width: 100%; min-height: 48px; border-radius: 12px; border: 1px solid var(--linea2); background: var(--superficie); padding: 10px 14px; font-size: 16px; color: var(--tinta);
 }
 textarea { resize: vertical; line-height: 1.45; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px rgba(35, 43, 92, 0.14); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px rgba(184, 74, 24, 0.14); }
 .btn:focus-visible, .item:focus-visible { outline: 2px solid var(--verde); outline-offset: 1px; }
 /* Cajas de texto sin borde dentro de tarjetas: con aire y sin marco al escribir */
 textarea[style*="border:0"] { padding: 10px 12px !important; border-radius: 12px; background: var(--fondo) !important; }
-textarea[style*="border:0"]:focus { box-shadow: 0 0 0 2px rgba(35, 43, 92, 0.16); }
+textarea[style*="border:0"]:focus { box-shadow: 0 0 0 2px rgba(184, 74, 24, 0.16); }
 ::placeholder { color: var(--tenue); }
 .dos-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 
-.segmentado { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: #E2E6F0; border-radius: 12px; padding: 4px; }
+.segmentado { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: #EEE3DA; border-radius: 12px; padding: 4px; }
 .segmentado input { position: absolute; opacity: 0; pointer-events: none; }
 .segmentado label { min-height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: var(--suave); cursor: pointer; }
 .segmentado input:checked + label { background: var(--superficie); color: var(--tinta); font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -102,7 +102,7 @@ textarea[style*="border:0"]:focus { box-shadow: 0 0 0 2px rgba(35, 43, 92, 0.16)
 .aviso-caja { display: flex; gap: 10px; background: var(--superficie); border: 1px solid var(--linea); border-radius: 14px; padding: 12px 14px; font-size: 13px; line-height: 1.45; color: var(--gris); }
 .aviso-caja svg { flex-shrink: 0; color: var(--verde); margin-top: 1px; }
 .banda { background: var(--verde-osc); color: #fff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.banda p { color: #D3D6EE; font-size: 14px; line-height: 1.45; }
+.banda p { color: #FCE3D4; font-size: 14px; line-height: 1.45; }
 .banda .btn { background: #fff; color: var(--verde-osc); border-color: #fff; align-self: flex-start; }
 
 .horas-num { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
@@ -145,7 +145,7 @@ textarea[style*="border:0"]:focus { box-shadow: 0 0 0 2px rgba(35, 43, 92, 0.16)
   .archivar-btn { display: inline-flex; position: absolute; right: 10px; bottom: 8px; z-index: 2; opacity: 0; transition: opacity .15s; }
   .deslizable:hover .archivar-btn, .archivar-btn:focus-visible { opacity: 1; }
 }
-.toast-btn { background: none; border: 0; color: #C9CEF0; font-weight: 700; font-size: 14px; cursor: pointer; padding: 4px 0; white-space: nowrap; }
+.toast-btn { background: none; border: 0; color: #FFC7A3; font-weight: 700; font-size: 14px; cursor: pointer; padding: 4px 0; white-space: nowrap; }
 .pregunta { font-size: 24px; font-weight: 800; line-height: 1.2; letter-spacing: -0.01em; }
 .feedback { background: var(--fondo); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; line-height: 1.45; white-space: pre-wrap; }
 
@@ -158,7 +158,7 @@ textarea[style*="border:0"]:focus { box-shadow: 0 0 0 2px rgba(35, 43, 92, 0.16)
 .toast { position: fixed; left: 50%; bottom: calc(160px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); max-width: min(560px, calc(100% - 32px)); background: var(--tinta); color: #fff; border-radius: 14px; padding: 12px 16px; display: flex; gap: 14px; align-items: center; font-size: 14px; line-height: 1.4; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 30; }
 .toast.visible { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
 .toast.error { background: var(--error); }
-.toast a { color: #C9CEF0; font-weight: 700; white-space: nowrap; }
+.toast a { color: #FFC7A3; font-weight: 700; white-space: nowrap; }
 
 dialog#modal { border: 0; padding: 0; border-radius: 22px; width: min(560px, calc(100% - 24px)); max-height: calc(100% - 40px); background: var(--fondo); color: var(--tinta); }
 dialog#modal::backdrop { background: rgba(18, 21, 48, 0.5); }
@@ -266,7 +266,7 @@ dialog#modal::backdrop { background: rgba(18, 21, 48, 0.5); }
   /* Agenda: la semana en siete columnas */
   .ancha .tira { display: none; }
   .semana-dias { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
-  .semana-dias .dia-bloque { background: rgba(35, 43, 92, 0.035); border: 1px solid var(--linea); border-radius: 14px; padding: 10px 7px; min-height: 300px; gap: 6px; }
+  .semana-dias .dia-bloque { background: rgba(184, 74, 24, 0.035); border: 1px solid var(--linea); border-radius: 14px; padding: 10px 7px; min-height: 300px; gap: 6px; }
   .semana-dias .dia-bloque.hoy { border-color: var(--verde); box-shadow: inset 0 0 0 1px var(--verde); }
   .semana-dias .largo { display: none; }
   .semana-dias .corto { display: inline; }
@@ -491,7 +491,7 @@ button.estado-sync { cursor: pointer; }
 .pdp-edit-c { display: flex; gap: 6px; align-items: flex-start; }
 .pdp-edit-c .campo-texto { min-height: 46px; padding: 10px 14px; font-size: 15.5px; }
 
-/* ===================== Portland Lab ===================== */
+/* ===================== Flexeo ===================== */
 .fila-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.4; }
 
 /* Diario */
@@ -549,28 +549,28 @@ button.estado-sync { cursor: pointer; }
 .icono-btn:disabled { opacity: .4; }
 
 /* Modo práctica (pantalla completa) */
-.practica { min-height: 100vh; min-height: 100dvh; background: #1C2350; color: #fff; display: flex; flex-direction: column; padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); transition: background .4s; }
-.practica.tiempo { background: #7A341C; }
+.practica { min-height: 100vh; min-height: 100dvh; background: #5A260F; color: #fff; display: flex; flex-direction: column; padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); transition: background .4s; }
+.practica.tiempo { background: #9E2A16; }
 .practica-cab { display: flex; align-items: center; gap: 10px; min-height: 56px; max-width: 760px; width: 100%; margin: 0 auto; }
 .practica-cab .volver { color: #fff; }
 .practica-tit { flex: 1; min-width: 0; font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .practica-crono { display: flex; align-items: center; gap: 6px; }
 .practica-crono #pr-t { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 64px; text-align: right; }
 .practica-cuerpo { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; max-width: 760px; width: 100%; margin: 0 auto; padding: 16px 0; }
-.practica-etq { font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #B9C0EE; }
+.practica-etq { font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #FFC7A3; }
 .practica-texto { font-size: clamp(22px, 5.6vw, 34px); line-height: 1.4; font-weight: 600; white-space: pre-wrap; overflow-wrap: anywhere; }
 .practica-puntos { display: flex; gap: 6px; }
 .practica-puntos i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); }
 .practica-puntos i.on { background: #fff; width: 22px; border-radius: 4px; }
-.practica-obj { font-size: 14px; line-height: 1.5; color: #D5D9F5; border-top: 1px solid rgba(255,255,255,.15); padding-top: 12px; }
+.practica-obj { font-size: 14px; line-height: 1.5; color: #F6DCCB; border-top: 1px solid rgba(255,255,255,.15); padding-top: 12px; }
 .practica-panel { max-width: 760px; width: 100%; margin: 0 auto 10px; background: rgba(255,255,255,.1); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.5; }
 .practica-pie { max-width: 760px; width: 100%; margin: 0 auto; padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
 .practica-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip-osc { min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-.chip-osc.on { background: #fff; color: #1C2350; }
+.chip-osc.on { background: #fff; color: #5A260F; }
 .practica-nav { display: flex; gap: 10px; }
 .ctrl { width: 56px; height: 56px; border-radius: 16px; border: 0; background: rgba(255,255,255,.14); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font: inherit; font-weight: 700; font-size: 16px; flex-shrink: 0; }
-.ctrl.ancho { flex: 1; width: auto; background: #fff; color: #1C2350; }
+.ctrl.ancho { flex: 1; width: auto; background: #fff; color: #5A260F; }
 .ctrl.peq { width: 38px; height: 38px; border-radius: 12px; }
 .ctrl:disabled { opacity: .35; cursor: default; }
 .ctrl:focus-visible, .chip-osc:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }

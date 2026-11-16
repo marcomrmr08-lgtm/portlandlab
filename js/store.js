@@ -1,4 +1,4 @@
-// Datos de Portland Lab: diario, lecturas, Hexaflex y estrategias del Grupo Portland.
+// Datos de Flexeo: diario, lecturas, Hexaflex y estrategias del Grupo Portland.
 // Se guardan siempre en este dispositivo y, si hay conexión con Google, en un archivo oculto de tu Drive.
 import { FICHAS_BASE, BIBLIO_BASE } from './hexaflexBase.js';
 

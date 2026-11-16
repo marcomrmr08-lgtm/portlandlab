@@ -1,6 +1,6 @@
-# Portland Lab
+# Flexeo
 
-App de prácticas, hermana de Luria Lab, con tres módulos:
+App de prácticas de ACT (antes «Portland Lab»), hermana de Luria Lab, con tres módulos:
 
 - **Diario**: ideas y reflexiones con fecha, filtros, búsqueda y procesos relacionados. Incluye **Lecturas** (antes «Bibliografía» del Hexaflex): estado y por dónde vas, citas y apuntes con página, y las reflexiones y fichas que salen de cada lectura. De una cita se puede pasar directamente a una reflexión.
 - **Hexaflex**: el mismo módulo que Luria Lab (teoría, fichas y práctica escrita, en audio y en role play). Desde Ajustes se pueden traer las fichas de Luria Lab.
@@ -10,7 +10,7 @@ App web instalable (PWA), sin servidor propio. Dirección: https://marcomrmr08-l
 
 ## Dónde se guardan los datos
 
-En el dispositivo y, al conectar con Google, en un archivo oculto del Drive de cada persona (`portland-lab-datos.json`). Los audios y vídeos del Hexaflex van a la carpeta «Portland Lab» del Drive.
+En el dispositivo y, al conectar con Google, en un archivo oculto del Drive de cada persona (`portland-lab-datos.json`). Los audios y vídeos del Hexaflex van a la carpeta «Flexeo» del Drive.
 
 ## Permisos de Google
 

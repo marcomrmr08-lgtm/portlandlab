@@ -134,7 +134,7 @@ export function vHxFicha(id) {
       ${(f.videos || []).map((v) => `<div class="medio"><span class="pequeno" style="font-weight:600;flex:1">${esc(fmtCorta(v.fecha))} · vídeo</span><a class="btn pequeno" href="${G.enlaceArchivo(v.id)}" target="_blank" rel="noopener">Ver en Drive</a><button class="btn texto" data-act="video-borrar" data-f="${esc(f.id)}" data-v="${esc(v.id)}" aria-label="Borrar vídeo">${icon('papelera', 16)}</button></div>`).join('')}
       <label class="pequeno" style="display:flex;gap:8px;align-items:flex-start;line-height:1.4"><input type="checkbox" id="consent" style="margin-top:3px"> Mi compañero/a sabe que se graba y está de acuerdo en que se guarde. Es un caso inventado, no un paciente real.</label>
       <label class="btn" for="in-video" style="cursor:pointer">${icon('pantalla', 18)}Adjuntar vídeo grabado con la cámara</label><input type="file" id="in-video" accept="video/*" class="oculto">
-      <span class="mini suave">Se guarda en tu Drive (Portland Lab › Hexaflex › Role plays).</span>`)}
+      <span class="mini suave">Se guarda en tu Drive (Flexeo › Hexaflex › Role plays).</span>`)}
     <button class="btn" data-act="hx-practica" data-id="${esc(f.id)}">Anotar una práctica (en mí, role play o en terapia)</button>
     ${(f.notasExp || []).map((x) => `<div class="feedback"><span class="tipo c-azul">${esc({ mi: 'En mí', rp: 'Role play', terapia: 'En terapia' }[x.donde] || '')} · ${esc(fmtCorta(x.fecha))}</span>${esc(x.texto)}</div>`).join('')}
     <h2 class="etiqueta-grupo">La ficha</h2>

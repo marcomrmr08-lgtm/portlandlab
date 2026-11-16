@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#232B5C"/>
-  <path d="M256 92 L398 174 V338 L256 420 L114 338 V174 Z" fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linejoin="round"/>
-  <circle cx="206" cy="232" r="30" fill="#C9CEF0"/>
-  <circle cx="306" cy="232" r="30" fill="#FFFFFF"/>
-  <path d="M152 334 C 160 292 184 272 206 272 C 228 272 246 286 256 304 C 266 286 284 272 306 272 C 328 272 352 292 360 334" fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="512" height="512" rx="112" fill="#C8531C"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Dos cintas que recorren cada una medio hexágono y se cruzan en el centro: fluidez e interacción -->
+    <path d="M256 96 L394 176 L394 222 C 394 296, 302 290, 256 256 C 210 222, 118 216, 118 290 L118 336 L256 416" stroke="#FFFFFF" stroke-width="28"/>
+    <path d="M282 238 C 272 244, 264 250, 256 256 C 248 262, 240 268, 230 274" stroke="#C8531C" stroke-width="52"/>
+    <path d="M256 416 L394 336 L394 290 C 394 216, 302 222, 256 256 C 210 290, 118 296, 118 222 L118 176 L256 96" stroke="#FFC7A3" stroke-width="28"/>
+  </g>
 </svg>

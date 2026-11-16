@@ -1,4 +1,4 @@
-# Seguridad y privacidad de Portland Lab
+# Seguridad y privacidad de Flexeo
 
 - Sin servidor ni base de datos propios: cada persona guarda sus datos en su dispositivo y en su propio Google Drive.
 - Permisos de Google mínimos: `drive.file` (solo archivos que crea la app) y `drive.appdata` (su archivo oculto). Sin acceso al correo.
