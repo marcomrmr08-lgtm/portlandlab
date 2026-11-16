@@ -53,7 +53,7 @@ export function vHexaflex() {
       <div class="barra" aria-hidden="true"><div style="width:${(total / 18) * 100}%"></div></div>
       <span class="mini suave" style="line-height:1.4">Cada proceso tiene tres niveles: <b>escrito</b> (tu versión de una ficha), <b>audio</b> (grabarte recitándola) y <b>role play</b> (practicarla con un compañero).</span></div>
     <div class="seccion">${MODELO.pilares.map((pl) => `<div class="pilar-fila pilar-${pl.k}"><b>${pl.nombre}</b><span class="pequeno suave">${esc(pl.texto)}</span></div>`).join('')}</div>
-    <div class="botones"><a href="#/hexaflex/banco" class="btn">${icon('diario', 18)}Banco (${HX().fichas.length})</a><a href="#/biblio" class="btn">${icon('guia', 18)}Bibliografía (${b.filter((x) => x.estado === 'leido').length}/${b.length})</a></div>
+    <div class="botones"><a href="#/hexaflex/banco" class="btn">${icon('diario', 18)}Banco (${HX().fichas.length})</a><a href="#/lecturas" class="btn">${icon('guia', 18)}Lecturas (${b.filter((x) => x.estado === 'leido').length}/${b.length})</a></div>
     </div>${nav('hexaflex')}`,
   };
 }
@@ -140,6 +140,7 @@ export function vHxFicha(id) {
     <h2 class="etiqueta-grupo">La ficha</h2>
     <section class="tarjeta">${dato('Objetivo', f.paraQue)}${dato('Cuándo usarlo', f.cuando)}${dato('Precauciones', f.precauciones)}${dato('Guion orientativo', f.guion)}${dato('Errores frecuentes', f.errores)}${dato('Variantes', f.variaciones)}
       ${dato('Fuente', [lib ? `${lib.autor} ${lib.titulo}` : '', f.pagina ? `p. ${f.pagina}` : '', !lib ? f.fuente : ''].filter(Boolean).join(' · '))}
+      ${lib ? `<a href="#/lecturas/l/${encodeURIComponent(lib.id)}" class="pequeno" style="font-weight:700;display:flex;gap:6px;align-items:center">${icon('guia', 16)}Ver la lectura y sus citas</a>` : ''}
       <a href="#/hexaflex/editar/${encodeURIComponent(f.id)}" class="btn">Editar ficha</a></section>
     </div>`,
     mount(r) {
@@ -179,7 +180,7 @@ export function vHxEditar(id, params) {
       ${campo('errores', 'Errores frecuentes', 'Lo que conviene evitar', 2)}
       ${campo('variaciones', 'Variantes', 'Adaptación para infancia, versión con objetos…', 2)}
       ${campo('roleplay', 'Para role play', 'Cómo practicarla con un compañero', 2)}
-      <div class="dos-col"><div class="campo"><label for="f-libro">Libro</label><select id="f-libro" name="libroId"><option value="">Otra fuente</option>${S.datos().biblio.map((b) => `<option value="${esc(b.id)}" ${b.id === f.libroId ? 'selected' : ''}>${esc(b.titulo.slice(0, 40))}</option>`).join('')}</select></div>
+      <div class="dos-col"><div class="campo"><label for="f-libro">Lectura</label><select id="f-libro" name="libroId"><option value="">Otra fuente</option>${S.datos().biblio.map((b) => `<option value="${esc(b.id)}" ${b.id === f.libroId ? 'selected' : ''}>${esc(b.titulo.slice(0, 40))}</option>`).join('')}</select></div>
       <div class="campo"><label for="f-pagina">Página(s)</label><input type="text" id="f-pagina" name="pagina" value="${esc(f.pagina)}" placeholder="p. ej. 145-147"></div></div>
       <div class="campo"><label for="f-fuente">Otra fuente o detalle</label><input type="text" id="f-fuente" name="fuente" value="${esc(f.fuente)}" placeholder="Capítulo, artículo, web…"></div>
       <button class="btn primario grande">Guardar ficha</button>
@@ -256,46 +257,6 @@ export async function subirAudiosPendientes() {
   }
 }
 
-// ======================= Bibliografía =======================
-const ESTADOS_LIB = [['pendiente', 'Pendientes'], ['curso', 'En curso'], ['leido', 'Leídos']];
-let tabBiblio = 'curso';
-export function vBiblio() {
-  const b = S.datos().biblio;
-  const lista = b.filter((x) => x.estado === tabBiblio);
-  const fichasLib = (id) => HX().fichas.filter((f) => f.libroId === id);
-  return {
-    html: `<div class="pantalla sin-nav">${volver('#/hexaflex', 'Bibliografía')}
-    <div class="segmentado" role="tablist">${ESTADOS_LIB.map(([k, t]) => `<button class="seg-btn ${tabBiblio === k ? 'activo' : ''}" data-act="tab-biblio" data-v="${k}" role="tab" aria-selected="${tabBiblio === k}">${t} (${b.filter((x) => x.estado === k).length})</button>`).join('')}</div>
-    <button class="btn linea" data-act="libro-nuevo">${icon('mas', 18)}Añadir libro</button>
-    <div class="seccion">${lista.map((l) => `<section class="tarjeta">
-      <div class="item-texto"><span style="font-size:16px;font-weight:700;line-height:1.3">${esc(l.titulo)}</span><span class="item-sub">${esc(l.autor)}</span></div>
-      ${l.progreso ? `<span class="pequeno"><b>Voy por:</b> ${esc(l.progreso)}</span>` : ''}${l.notas ? `<p class="pequeno suave" style="line-height:1.45">${esc(l.notas)}</p>` : ''}
-      ${fichasLib(l.id).length ? `<span class="insignias">${fichasLib(l.id).map((f) => `<a href="#/hexaflex/ficha/${encodeURIComponent(f.id)}" class="insignia">${esc(f.nombre)}</a>`).join('')}</span>` : ''}
-      <div class="botones">${l.estado !== 'leido' ? `<button class="btn primario" data-act="libro-estado" data-id="${esc(l.id)}" data-v="${l.estado === 'pendiente' ? 'curso' : 'leido'}">${l.estado === 'pendiente' ? 'Empezar a leer' : '✓ Marcar como leído'}</button>` : `<button class="btn" data-act="libro-estado" data-id="${esc(l.id)}" data-v="curso">Volver a «En curso»</button>`}<button class="btn" data-act="libro-editar" data-id="${esc(l.id)}">Editar</button></div>
-    </section>`).join('') || `<p class="vacio">No hay libros ${tabBiblio === 'leido' ? 'leídos' : tabBiblio === 'curso' ? 'en curso' : 'pendientes'}.</p>`}</div></div>`,
-  };
-}
-function modalLibro(id) {
-  const l = id ? S.datos().biblio.find((x) => x.id === id) : null;
-  abrirModal(`<h2>${l ? 'Editar libro' : 'Añadir libro'}</h2>
-  <form id="f-lib" class="seccion">
-    <div class="campo"><label for="l-tit">Título</label><input type="text" id="l-tit" name="titulo" required value="${esc(l?.titulo)}"></div>
-    <div class="campo"><label for="l-aut">Autor/es</label><input type="text" id="l-aut" name="autor" value="${esc(l?.autor)}"></div>
-    <div class="campo"><span class="etiqueta">Estado</span>${seg('estado', ESTADOS_LIB.map(([k, t]) => [k, t.replace('Pendientes', 'Pendiente').replace('Leídos', 'Leído')]), l?.estado || 'pendiente')}</div>
-    <div class="campo"><label for="l-prog">Por dónde voy</label><input type="text" id="l-prog" name="progreso" value="${esc(l?.progreso)}" placeholder="p. ej. parte 3, capítulo 8"></div>
-    <div class="campo"><label for="l-not">Notas</label><textarea id="l-not" name="notas" rows="3">${esc(l?.notas)}</textarea></div>
-    <div class="botones"><button type="button" class="btn" data-cerrar>Cancelar</button><button class="btn primario">Guardar</button></div>
-    ${l ? '<button type="button" class="btn texto" id="b-del-lib" style="color:var(--error)">Eliminar libro</button>' : ''}
-  </form>`, (d) => {
-    d.querySelector('#f-lib').addEventListener('submit', (e) => {
-      e.preventDefault(); const v = leerForm(e.target);
-      S.actualizar((s) => { const datos = { titulo: v.titulo.trim(), autor: v.autor.trim(), estado: v.estado, progreso: v.progreso.trim(), notas: v.notas.trim() }; if (l) Object.assign(l, datos); else s.biblio.push({ id: S.nuevoId(), ...datos }); });
-      tabBiblio = v.estado; cerrarModal(); ctx.render();
-    });
-    d.querySelector('#b-del-lib')?.addEventListener('click', () => { S.actualizar((s) => { s.biblio = s.biblio.filter((x) => x.id !== l.id); s.borrados = [...new Set([...(s.borrados || []), l.id])]; }); cerrarModal(); ctx.render(); });
-  });
-}
-
 function modalPracticaFicha(id) {
   const f = HX().fichas.find((x) => x.id === id);
   abrirModal(`<h2>He practicado «${esc(f.nombre)}»</h2>
@@ -322,10 +283,6 @@ function modalPracticaFicha(id) {
 export const accionesHx = {
   'hx-practica': (b) => modalPracticaFicha(b.dataset.id),
   'tab-hx': (b) => { tabProceso[b.dataset.k] = b.dataset.v; ctx.render(); },
-  'tab-biblio': (b) => { tabBiblio = b.dataset.v; ctx.render(); },
-  'libro-nuevo': () => modalLibro(null),
-  'libro-editar': (b) => modalLibro(b.dataset.id),
-  'libro-estado': (b) => { S.actualizar((s) => { s.biblio.find((x) => x.id === b.dataset.id).estado = b.dataset.v; }); toast(b.dataset.v === 'leido' ? 'Libro marcado como leído.' : 'Libro en curso.'); tabBiblio = b.dataset.v; ctx.render(); },
   'audio-grabar': (b) => { if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { toast('Este navegador no permite grabar audio.', { error: true }); return; } modalGrabar(b.dataset.f); },
   'audio-oir': async (b) => {
     const f = HX().fichas.find((x) => x.id === b.dataset.f); const a = f.audios.find((x) => x.id === b.dataset.a);

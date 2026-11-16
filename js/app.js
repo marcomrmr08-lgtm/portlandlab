@@ -1,13 +1,14 @@
-// Portland Lab · Diario, Hexaflex y Grupo Portland
+// Portland Lab · Diario (con lecturas), Hexaflex y Grupo Portland
 import * as S from './store.js';
 import * as G from './google.js';
-import { vPortland } from './portland.js';
+import * as P from './portland.js';
+import { vLectura, accionesLecturas } from './lecturas.js';
 import * as DI from './diario.js';
 import * as H from './hexaflex.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -102,6 +103,8 @@ function vAjustes() {
 const acciones = {
   ...H.accionesHx,
   ...DI.accionesDiario,
+  ...accionesLecturas,
+  ...P.accionesPortland,
   conectar: (b) => conCarga(b, async () => { await conectarYSincronizar(); toast('Conectado.'); render(); }),
   'sync-reintentar': () => subir(),
   desconectar: async () => { await G.desconectar(); toast('Desconectado: la app ya no tiene permiso en tu Google.'); render(); },
@@ -139,15 +142,20 @@ const rutas = [
   [/^#\/hexaflex\/ficha\/(.+)$/, (id) => H.vHxFicha(decodeURIComponent(id))],
   [/^#\/hexaflex\/editar\/(.+)$/, (id, p) => H.vHxEditar(decodeURIComponent(id), p)],
   [/^#\/hexaflex\/banco$/, () => H.vHxBanco()],
-  [/^#\/biblio$/, () => H.vBiblio()],
-  [/^#\/portland$/, () => vPortland()],
+  [/^#\/lecturas$/, () => DI.vLecturas()],
+  [/^#\/lecturas\/l\/([^/]+)$/, (id) => vLectura(decodeURIComponent(id))],
+  [/^#\/biblio$/, () => { setTimeout(() => irA('#/lecturas'), 0); return { html: '' }; }],
+  [/^#\/portland$/, () => P.vPortland()],
+  [/^#\/portland\/e\/([^/]+)$/, (id) => P.vEstrategia(decodeURIComponent(id))],
+  [/^#\/portland\/e\/([^/]+)\/editar\/(\w+)$/, (id, sec) => P.vEditar(decodeURIComponent(id), sec)],
+  [/^#\/portland\/e\/([^/]+)\/practicar$/, (id) => P.vPracticar(decodeURIComponent(id))],
   [/^#\/ajustes$/, () => vAjustes()],
 ];
 
 // ---------- Formato de escritorio (desde 960 px de ancho): menú lateral ----------
 const ESCRITORIO = window.matchMedia('(min-width: 960px)');
 ESCRITORIO.addEventListener?.('change', () => render());
-const seccionDe = (ruta) => (ruta.startsWith('#/hexaflex') || ruta.startsWith('#/biblio') ? 'hexaflex' : ruta.startsWith('#/portland') ? 'portland' : ruta.startsWith('#/ajustes') ? 'ajustes' : 'diario');
+const seccionDe = (ruta) => (ruta.startsWith('#/hexaflex') ? 'hexaflex' : ruta.startsWith('#/portland') ? 'portland' : ruta.startsWith('#/ajustes') ? 'ajustes' : 'diario');
 function lateral(sec) {
   const enlace = ([r, t, i]) => `<a href="#/${r}" class="lat-enlace ${r === sec ? 'activo' : ''}" ${r === sec ? 'aria-current="page"' : ''}>${icon(i, 20)}<span>${t}</span></a>`;
   const estado = !G.configurado() ? `<span class="lat-estado">${icon('candado', 14)}Modo prueba · solo este dispositivo</span>`
@@ -163,9 +171,10 @@ function render() {
     const m = ruta.match(re);
     if (!m) continue;
     const v = fn(...m.slice(1), params);
-    if (!ESCRITORIO.matches) {
+    const completa = /\/practicar$/.test(ruta); // el modo práctica ocupa toda la pantalla
+    if (!ESCRITORIO.matches || completa) {
       app().classList.remove('es-escritorio');
-      app().innerHTML = (barraEstado() || '<span class="estado-vacio"></span>') + v.html;
+      app().innerHTML = (completa ? '' : barraEstado() || '<span class="estado-vacio"></span>') + v.html;
       v.mount?.(app());
       return;
     }

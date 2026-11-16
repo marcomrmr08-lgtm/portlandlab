@@ -505,18 +505,74 @@ button.estado-sync { cursor: pointer; }
 .texto-diario { min-height: 220px; line-height: 1.55; }
 .lectura { font-size: 16px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-/* Grupo Portland (boceto) */
-.boceto-etq { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--ambar-cl); color: #7A4A0E; align-self: flex-start; }
-.objetivos { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; }
+/* Lecturas */
+.insignia.tipo-lectura { background: var(--azul-cl, #E4ECF5); color: var(--azul, #2B5784); }
+.cita { gap: 8px; }
+.cita p { font-size: 15px; line-height: 1.55; white-space: pre-wrap; padding-left: 12px; border-left: 3px solid var(--linea2); }
+.icono-btn.peq { width: 36px; height: 36px; }
+
+/* Grupo Portland: estrategias */
 .estructura { display: flex; flex-direction: column; }
-.estructura > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--separador); }
-.estructura > div:first-child { border-top: 0; padding-top: 0; }
-.estructura b.t { font-size: 14px; color: var(--verde); font-variant-numeric: tabular-nums; }
-.estructura .sub { display: flex; flex-direction: column; gap: 3px; font-size: 14px; color: var(--gris); margin-top: 4px; }
-.roles3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.roles3 > div { background: var(--fondo); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.roles3 b { font-size: 14px; }
-.roles3 span { font-size: 12.5px; color: var(--suave); line-height: 1.4; }
-.tarjeta.modulo-pend { flex-direction: row; gap: 12px; align-items: flex-start; }
-.modulo-pend .item-texto { gap: 2px; }
-@media (max-width: 420px) { .roles3 { grid-template-columns: 1fr; } }
+.estructura > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--separador); font-size: 14px; }
+.estructura > div:first-child { border-top: 0; }
+.estructura b.t { font-size: 14px; color: var(--verde); }
+.estructura .sub { display: flex; flex-direction: column; gap: 3px; color: var(--gris); margin-top: 4px; }
+.sobre-grupo summary { display: flex; flex-direction: column; gap: 2px; cursor: pointer; list-style: none; }
+.sobre-grupo summary::-webkit-details-marker { display: none; }
+.sobre-grupo[open] summary { margin-bottom: 4px; }
+.pasos-est { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
+.pasos-est li { font-size: 14px; line-height: 1.45; }
+.pasos-est b { display: block; }
+.pasos-est span { color: var(--gris); }
+.pasos-pts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.paso-pt { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--fondo); color: var(--suave); }
+.paso-pt.ok { background: var(--verde-cl); color: var(--verde); }
+.paso-est { gap: 12px; }
+.paso-est.actual { border-color: var(--verde); box-shadow: 0 0 0 1px var(--verde); }
+.paso-est.hecho .nivel-num { background: var(--exito); border-color: var(--exito); color: #fff; }
+.fb-campo { display: flex; flex-direction: column; gap: 3px; }
+.fb-campo p { font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+.guion-lista { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
+.guion-lista li { font-size: 15px; line-height: 1.5; }
+.guion-lista b { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--verde); }
+.guion-lista span { white-space: pre-wrap; }
+.si-ent { font-size: 14px; line-height: 1.5; }
+.frases { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; font-style: italic; }
+.ensayos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ensayos li { display: flex; flex-direction: column; gap: 2px; font-size: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--separador); }
+.ensayos li:last-child { border-bottom: 0; padding-bottom: 0; }
+.ayuda-proc summary { cursor: pointer; font-weight: 700; color: var(--verde); }
+.ayuda-proc ul { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45; color: var(--gris); }
+.paso-edit { gap: 8px; }
+.etapa-input { font-weight: 700; border: 0 !important; padding: 4px 0 !important; background: transparent !important; flex: 1; min-width: 0; font-size: 15px; }
+.icono-btn.sube svg { transform: rotate(90deg); }
+.icono-btn:disabled { opacity: .4; }
+
+/* Modo práctica (pantalla completa) */
+.practica { min-height: 100vh; min-height: 100dvh; background: #1C2350; color: #fff; display: flex; flex-direction: column; padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left)); transition: background .4s; }
+.practica.tiempo { background: #7A341C; }
+.practica-cab { display: flex; align-items: center; gap: 10px; min-height: 56px; max-width: 760px; width: 100%; margin: 0 auto; }
+.practica-cab .volver { color: #fff; }
+.practica-tit { flex: 1; min-width: 0; font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.practica-crono { display: flex; align-items: center; gap: 6px; }
+.practica-crono #pr-t { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 64px; text-align: right; }
+.practica-cuerpo { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; max-width: 760px; width: 100%; margin: 0 auto; padding: 16px 0; }
+.practica-etq { font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #B9C0EE; }
+.practica-texto { font-size: clamp(22px, 5.6vw, 34px); line-height: 1.4; font-weight: 600; white-space: pre-wrap; overflow-wrap: anywhere; }
+.practica-puntos { display: flex; gap: 6px; }
+.practica-puntos i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); }
+.practica-puntos i.on { background: #fff; width: 22px; border-radius: 4px; }
+.practica-obj { font-size: 14px; line-height: 1.5; color: #D5D9F5; border-top: 1px solid rgba(255,255,255,.15); padding-top: 12px; }
+.practica-panel { max-width: 760px; width: 100%; margin: 0 auto 10px; background: rgba(255,255,255,.1); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.5; }
+.practica-pie { max-width: 760px; width: 100%; margin: 0 auto; padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+.practica-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip-osc { min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.chip-osc.on { background: #fff; color: #1C2350; }
+.practica-nav { display: flex; gap: 10px; }
+.ctrl { width: 56px; height: 56px; border-radius: 16px; border: 0; background: rgba(255,255,255,.14); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font: inherit; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+.ctrl.ancho { flex: 1; width: auto; background: #fff; color: #1C2350; }
+.ctrl.peq { width: 38px; height: 38px; border-radius: 12px; }
+.ctrl:disabled { opacity: .35; cursor: default; }
+.ctrl:focus-visible, .chip-osc:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .practica { transition: none; } }
+a.seg-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; text-align: center; }

@@ -2,9 +2,9 @@
 
 App de prácticas, hermana de Luria Lab, con tres módulos:
 
-- **Diario**: ideas y reflexiones, con fecha, filtros (ideas y reflexiones), búsqueda y relación con los procesos del Hexaflex.
-- **Hexaflex**: el mismo módulo que Luria Lab (teoría, fichas, práctica escrita, en audio y en role play, bibliografía). Desde Ajustes se pueden traer las fichas de Luria Lab.
-- **Grupo Portland** (boceto): intención, participantes, estructura de la sesión y un espacio de notas para ir definiendo la dinámica. Las funciones del grupo (sesiones, inscripción, rondas con temporizador y feedback) se desarrollarán cuando la dinámica esté clara. Hay una primera versión completa en el historial de este repositorio (primer commit).
+- **Diario**: ideas y reflexiones con fecha, filtros, búsqueda y procesos relacionados. Incluye **Lecturas** (antes «Bibliografía» del Hexaflex): estado y por dónde vas, citas y apuntes con página, y las reflexiones y fichas que salen de cada lectura. De una cita se puede pasar directamente a una reflexión.
+- **Hexaflex**: el mismo módulo que Luria Lab (teoría, fichas y práctica escrita, en audio y en role play). Desde Ajustes se pueden traer las fichas de Luria Lab.
+- **Grupo Portland**: preparador personal de la intervención para el role play. Cada estrategia tiene cuatro pasos: **diseñar** (procesos, situación del paciente, objetivo y técnicas del Hexaflex), **guion** (pasos, «si se atasca… entonces…» y frases de apoyo), **ensayar** (modo práctica a pantalla completa con temporizador, y registro de ensayos) y **revisar** (feedback, qué funcionó y qué cambiar). La revisión se puede llevar al Diario y anotar en las fichas del Hexaflex como práctica en role play.
 
 App web instalable (PWA), sin servidor propio. Dirección: https://marcomrmr08-lgtm.github.io/portlandlab/
 

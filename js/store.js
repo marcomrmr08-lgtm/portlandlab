@@ -1,4 +1,4 @@
-// Datos de Portland Lab: diario, Hexaflex, bibliografía y notas del Grupo Portland.
+// Datos de Portland Lab: diario, lecturas, Hexaflex y estrategias del Grupo Portland.
 // Se guardan siempre en este dispositivo y, si hay conexión con Google, en un archivo oculto de tu Drive.
 import { FICHAS_BASE, BIBLIO_BASE } from './hexaflexBase.js';
 
@@ -14,6 +14,7 @@ function porDefecto() {
     hexaflex: { modelo: {}, procesos: {}, fichas: [], notas: {} },
     biblio: null,
     diario: [],
+    estrategias: [],
     portland: { notas: '' },
     borrados: [],
   };
@@ -37,6 +38,7 @@ function sanear(s) {
   sanearIds(s);
   if (s.hexaflex) s.hexaflex.fichas = conId(s.hexaflex.fichas);
   if (s.biblio) s.biblio = conId(s.biblio);
+  s.estrategias = conId(s.estrategias);
   s.diario = conId(s.diario).filter((e) => typeof e.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.fecha));
   return s;
 }
@@ -63,6 +65,19 @@ function completar(s) {
   }
   for (const f of hx.fichas) { f.audios = f.audios || []; f.videos = f.videos || []; f.exp = f.exp || {}; f.notasExp = f.notasExp || []; f.procesos = Array.isArray(f.procesos) ? f.procesos : []; }
   if (!Array.isArray(s.biblio)) s.biblio = BIBLIO_BASE.map((b) => ({ ...b }));
+  for (const b of s.biblio) {
+    b.titulo = String(b.titulo || 'Sin título'); b.autor = String(b.autor || ''); b.tipo = b.tipo || 'Libro';
+    b.estado = ['pendiente', 'curso', 'leido'].includes(b.estado) ? b.estado : 'pendiente';
+    b.citas = conId(b.citas); b.procesos = Array.isArray(b.procesos) ? b.procesos : [];
+    if (b.enlace && !/^https?:\/\/[^\s"'<>]+$/i.test(b.enlace)) b.enlace = '';
+  }
+  if (!Array.isArray(s.estrategias)) s.estrategias = [];
+  for (const x of s.estrategias) {
+    x.titulo = String(x.titulo || 'Estrategia'); x.procesos = Array.isArray(x.procesos) ? x.procesos : []; x.fichas = Array.isArray(x.fichas) ? x.fichas : [];
+    x.pasos = conId(x.pasos); x.bloqueos = conId(x.bloqueos); x.ensayos = conId(x.ensayos);
+    x.revision = x.revision && typeof x.revision === 'object' ? x.revision : {};
+    x.minutos = Number(x.minutos) > 0 ? Number(x.minutos) : 15;
+  }
   return s;
 }
 
@@ -110,6 +125,7 @@ export function fusionar(local, remoto) {
     hexaflex: { ...R.hexaflex, ...L.hexaflex, notas, fichas: unir(R.hexaflex.fichas, L.hexaflex.fichas) },
     biblio: unir(R.biblio, L.biblio),
     diario: unir(R.diario, L.diario),
+    estrategias: unir(R.estrategias, L.estrategias),
     portland: { notas: base.portland?.notas || otro.portland?.notas || '' },
     borrados: [...borrados],
   };
