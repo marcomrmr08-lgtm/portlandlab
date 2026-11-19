@@ -1,6 +1,6 @@
 # Flexeo
 
-App de prácticas de ACT (antes «Portland Lab»), hermana de Luria Lab, con tres módulos:
+App de prácticas de ACT (antes «Portland Lab»).
 
 Se abre en el **Hexaflex**. Módulos:
 
