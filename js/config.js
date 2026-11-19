@@ -10,8 +10,6 @@ export const CONFIG = {
     'https://www.googleapis.com/auth/drive.appdata',
   ].join(' '),
   ARCHIVO_DATOS: 'portland-lab-datos.json',
-  // Archivo de datos de Luria Lab (mismo ID de cliente → misma carpeta oculta): solo se lee para importar fichas
-  ARCHIVO_LURIA: 'luria-lab-datos.json',
   CARPETA_RAIZ: 'Flexeo',
   URL_APP: 'https://marcomrmr08-lgtm.github.io/portlandlab/',
 };

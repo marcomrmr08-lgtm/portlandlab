@@ -1,14 +1,15 @@
-// Flexeo · Diario (con lecturas), Hexaflex y Grupo Portland
+// Flexeo · Hexaflex, Biblioteca (apuntes y lecturas), Diario y Role play
 import * as S from './store.js';
 import * as G from './google.js';
-import * as P from './portland.js';
+import * as P from './roleplay.js';
 import { vLectura, accionesLecturas } from './lecturas.js';
 import * as DI from './diario.js';
 import * as H from './hexaflex.js';
+import * as B from './biblioteca.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -83,12 +84,9 @@ function vAjustes() {
       ? `<div class="fila-entre"><span class="pequeno"><span class="c-verde" style="font-weight:700">● Conectado</span> · tus datos se guardan en tu Drive</span><button class="btn pequeno" data-act="desconectar">Desconectar</button></div>`
       : `<p class="pequeno suave" style="line-height:1.5">Conecta para guardar tu diario y tus fichas en tu Drive y tenerlos en todos tus dispositivos.</p><button class="btn primario" data-act="conectar">Conectar con Google</button>`;
   return {
-    html: `<div class="pantalla">${volver('#/diario', 'Ajustes')}
+    html: `<div class="pantalla">${volver('#/hexaflex', 'Ajustes')}
     <h2 class="etiqueta-grupo">Cuenta de Google</h2>
     <section class="tarjeta">${cuenta}</section>
-    <h2 class="etiqueta-grupo">Hexaflex</h2>
-    <section class="tarjeta"><p class="pequeno suave" style="line-height:1.5">Trae las fichas, tus notas y la bibliografía que ya tienes en Luria Lab. Luria Lab no se modifica.</p>
-      <button class="btn" data-act="importar-luria" ${G.configurado() ? '' : 'disabled'}>${icon('descargar', 18)}Traer mis fichas de Luria Lab</button></section>
     <h2 class="etiqueta-grupo">Datos</h2>
     <section class="tarjeta">
       <button class="btn" data-act="exportar">${icon('descargar', 18)}Descargar una copia de mis datos</button>
@@ -104,25 +102,17 @@ const acciones = {
   ...H.accionesHx,
   ...DI.accionesDiario,
   ...accionesLecturas,
-  ...P.accionesPortland,
+  ...P.accionesRoleplay,
+  ...B.accionesBiblioteca,
   conectar: (b) => conCarga(b, async () => { await conectarYSincronizar(); toast('Conectado.'); render(); }),
   'sync-reintentar': () => subir(),
   desconectar: async () => { await G.desconectar(); toast('Desconectado: la app ya no tiene permiso en tu Google.'); render(); },
-  'importar-luria': (b) => conCarga(b, async () => {
-    await ctx.google();
-    const luria = await G.leerDatosLuria();
-    if (!luria) throw new Error('No he encontrado datos de Luria Lab en tu Drive. ¿Has conectado Luria Lab con esta misma cuenta?');
-    await guardarCopia('Antes de traer las fichas de Luria Lab');
-    const r = S.importarLuria(luria);
-    toast(r.fichas || r.libros ? `Traídas ${r.fichas} fichas y ${r.libros} libros de Luria Lab.` : 'Ya tenías todas las fichas de Luria Lab.');
-    render();
-  }),
-  exportar: () => descargar(new Blob([JSON.stringify(S.datos(), null, 2)], { type: 'application/json' }), `portland-lab-${new Date().toISOString().slice(0, 10)}.json`),
-  'borrar-todo': () => confirmar('¿Cerrar sesión y borrar este dispositivo?', 'Se quita el permiso de la app en tu Google y se borra lo guardado aquí. Tu diario y tus fichas siguen en tu Drive y vuelven al conectar.', 'Cerrar sesión y borrar', async () => {
+  exportar: () => descargar(new Blob([JSON.stringify(S.datos(), null, 2)], { type: 'application/json' }), `flexeo-${new Date().toISOString().slice(0, 10)}.json`),
+  'borrar-todo': () => confirmar('¿Cerrar sesión y borrar este dispositivo?', 'Se quita el permiso de la app en tu Google y se borra lo guardado aquí. Tus datos siguen en tu Drive y vuelven al conectar.', 'Cerrar sesión y borrar', async () => {
     await G.desconectar();
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('pl-') || k.startsWith('portland-lab')) localStorage.removeItem(k); } catch {}
     try { indexedDB.deleteDatabase('portland-lab'); } catch {}
-    S.olvidarTodo(); location.hash = '#/diario'; render();
+    S.olvidarTodo(); location.hash = '#/hexaflex'; render();
   }),
 };
 app().addEventListener('click', (e) => {
@@ -131,41 +121,45 @@ app().addEventListener('click', (e) => {
 });
 
 // ======================= Rutas =======================
+const redirigir = (a) => { setTimeout(() => irA(a), 0); return { html: '' }; };
 const rutas = [
-  [/^#\/?(diario)?$/, () => DI.vDiario()],
-  [/^#\/diario\/nueva$/, (p) => DI.vEditar('nueva', p)],
-  [/^#\/diario\/editar\/([^/]+)$/, (id, p) => DI.vEditar(decodeURIComponent(id), p)],
-  [/^#\/diario\/e\/([^/]+)$/, (id) => DI.vEntrada(decodeURIComponent(id))],
-  [/^#\/hexaflex$/, () => H.vHexaflex()],
+  [/^#\/?(hexaflex)?$/, () => H.vHexaflex()],
   [/^#\/hexaflex\/modelo$/, () => H.vHxModelo()],
   [/^#\/hexaflex\/p\/(\w+)$/, (k) => H.vHxProceso(k)],
   [/^#\/hexaflex\/ficha\/(.+)$/, (id) => H.vHxFicha(decodeURIComponent(id))],
   [/^#\/hexaflex\/editar\/(.+)$/, (id, p) => H.vHxEditar(decodeURIComponent(id), p)],
   [/^#\/hexaflex\/banco$/, () => H.vHxBanco()],
-  [/^#\/lecturas$/, () => DI.vLecturas()],
+  [/^#\/biblioteca$/, () => B.vApuntes()],
+  [/^#\/biblioteca\/lecturas$/, () => B.vLecturasBiblio()],
+  [/^#\/biblioteca\/a\/([^/]+)$/, (id) => B.vApunte(decodeURIComponent(id))],
   [/^#\/lecturas\/l\/([^/]+)$/, (id) => vLectura(decodeURIComponent(id))],
-  [/^#\/biblio$/, () => { setTimeout(() => irA('#/lecturas'), 0); return { html: '' }; }],
-  [/^#\/portland$/, () => P.vPortland()],
-  [/^#\/portland\/e\/([^/]+)$/, (id) => P.vEstrategia(decodeURIComponent(id))],
-  [/^#\/portland\/e\/([^/]+)\/editar\/(\w+)$/, (id, sec) => P.vEditar(decodeURIComponent(id), sec)],
-  [/^#\/portland\/e\/([^/]+)\/practicar$/, (id) => P.vPracticar(decodeURIComponent(id))],
+  [/^#\/(lecturas|biblio)$/, () => redirigir('#/biblioteca/lecturas')],
+  [/^#\/diario$/, () => DI.vDiario()],
+  [/^#\/diario\/nueva$/, (p) => DI.vEditar('nueva', p)],
+  [/^#\/diario\/editar\/([^/]+)$/, (id, p) => DI.vEditar(decodeURIComponent(id), p)],
+  [/^#\/diario\/e\/([^/]+)$/, (id) => DI.vEntrada(decodeURIComponent(id))],
+  [/^#\/roleplay$/, () => P.vRoleplay()],
+  [/^#\/roleplay\/e\/([^/]+)$/, (id) => P.vEstrategia(decodeURIComponent(id))],
+  [/^#\/roleplay\/e\/([^/]+)\/editar\/(\w+)$/, (id, sec) => P.vEditar(decodeURIComponent(id), sec)],
+  [/^#\/roleplay\/e\/([^/]+)\/practicar$/, (id) => P.vPracticar(decodeURIComponent(id))],
+  [/^#\/portland(.*)$/, (resto) => redirigir(`#/roleplay${resto}`)],
   [/^#\/ajustes$/, () => vAjustes()],
 ];
 
 // ---------- Formato de escritorio (desde 960 px de ancho): menú lateral ----------
 const ESCRITORIO = window.matchMedia('(min-width: 960px)');
 ESCRITORIO.addEventListener?.('change', () => render());
-const seccionDe = (ruta) => (ruta.startsWith('#/hexaflex') ? 'hexaflex' : ruta.startsWith('#/portland') ? 'portland' : ruta.startsWith('#/ajustes') ? 'ajustes' : 'diario');
+const seccionDe = (ruta) => (ruta.startsWith('#/biblioteca') || ruta.startsWith('#/lecturas') ? 'biblioteca' : ruta.startsWith('#/diario') ? 'diario' : ruta.startsWith('#/roleplay') ? 'roleplay' : ruta.startsWith('#/ajustes') ? 'ajustes' : 'hexaflex');
 function lateral(sec) {
   const enlace = ([r, t, i]) => `<a href="#/${r}" class="lat-enlace ${r === sec ? 'activo' : ''}" ${r === sec ? 'aria-current="page"' : ''}>${icon(i, 20)}<span>${t}</span></a>`;
   const estado = !G.configurado() ? `<span class="lat-estado">${icon('candado', 14)}Modo prueba · solo este dispositivo</span>`
     : barraEstado() || (G.conectado() ? '<span class="lat-estado ok"><i></i>Conectado a Google</span>' : '<button class="btn pequeno" data-act="conectar" style="width:100%">Conectar con Google</button>');
-  return `<aside class="lateral" aria-label="Menú"><a href="#/diario" class="lat-marca">Flexeo</a>
+  return `<aside class="lateral" aria-label="Menú"><a href="#/hexaflex" class="lat-marca">Flexeo</a>
     <nav class="lat-grupo">${NAV.map(enlace).join('')}</nav><div class="lat-pie">${estado}</div></aside>`;
 }
 
 function render() {
-  const [ruta, qs] = (location.hash || '#/diario').split('?');
+  const [ruta, qs] = (location.hash || '#/hexaflex').split('?');
   const params = new URLSearchParams(qs || '');
   for (const [re, fn] of rutas) {
     const m = ruta.match(re);
@@ -183,7 +177,7 @@ function render() {
     v.mount?.(app().querySelector('.principal'));
     return;
   }
-  location.hash = '#/diario';
+  location.hash = '#/hexaflex';
 }
 ctx.render = render;
 

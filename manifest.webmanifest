@@ -1,9 +1,9 @@
 {
   "name": "Flexeo",
   "short_name": "Flexeo",
-  "description": "Diario y lecturas, banco Hexaflex de ACT y preparación de role plays.",
+  "description": "Hexaflex de ACT, biblioteca de apuntes, diario y preparación de role plays.",
   "lang": "es",
-  "start_url": "./#/diario",
+  "start_url": "./#/hexaflex",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F7F1EC",

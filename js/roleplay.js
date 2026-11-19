@@ -1,4 +1,4 @@
-// Grupo Portland: preparador personal de intervenciones para los role plays.
+// Role play: preparador personal de intervenciones para los role plays del grupo.
 // Cada estrategia sigue cuatro pasos: diseñar, guion, ensayar (con modo práctica) y revisar.
 // Es personal: se guarda con el resto de tus datos (este dispositivo y tu Drive).
 import * as S from './store.js';
@@ -7,13 +7,13 @@ import { PROCESOS, PILAR, proceso } from './procesos.js';
 import { esc, hoyISO, fmtFecha, fmtCorta, toast, abrirModal, cerrarModal, icon } from './ui.js';
 import { ctx, app, irA, nav, volver, seg, leerForm, confirmar, vNoEncontrado as noEncontrado } from './comun.js';
 
-const vNoEncontrado = () => noEncontrado('#/portland');
+const vNoEncontrado = () => noEncontrado('#/roleplay');
 const E = () => S.datos().estrategias;
 const est = (id) => E().find((x) => x.id === id);
 const fichasHx = () => S.datos().hexaflex.fichas;
 const ficha = (id) => fichasHx().find((f) => f.id === id);
 const chips = (ks = []) => ks.filter((k) => proceso(k)).map((k) => `<span class="insignia pilar-${PILAR[k]}">${esc(proceso(k).nombre)}</span>`).join('');
-const url = (x, resto = '') => `#/portland/e/${encodeURIComponent(x.id)}${resto}`;
+const url = (x, resto = '') => `#/roleplay/e/${encodeURIComponent(x.id)}${resto}`;
 
 // Etapas que se proponen al empezar el guion (se pueden cambiar o quitar)
 const ETAPAS = [
@@ -22,7 +22,7 @@ const ETAPAS = [
   ['Intervenir', 'La metáfora o el ejercicio, paso a paso.'],
   ['Cerrar', 'Cómo recoges lo vivido y lo conectas con lo que le importa.'],
 ];
-const MODOS = { solo: 'En voz alta, solo', companero: 'Con un compañero', grupo: 'En el Grupo Portland' };
+const MODOS = { solo: 'En voz alta, solo', companero: 'Con un compañero', grupo: 'En el grupo' };
 
 // Estado de cada paso (para la lista y la ficha)
 function pasos(x) {
@@ -37,12 +37,12 @@ function pasos(x) {
 const siguiente = (x) => { const p = pasos(x); return !p.diseno ? 'diseno' : !p.guion ? 'guion' : !p.ensayos ? 'ensayo' : !p.revision ? 'revision' : null; };
 
 // ======================= Lista =======================
-export function vPortland() {
+export function vRoleplay() {
   const lista = [...E()].sort((a, b) => Number(pasos(a).revision) - Number(pasos(b).revision) || (b.fecha || b.creado || '').localeCompare(a.fecha || a.creado || ''));
   const notas = S.datos().portland?.notas || '';
   return {
     html: `<div class="pantalla">
-    <div class="item-texto"><h1 class="titulo">Grupo Portland</h1><span class="suave pequeno">Prepara, ensaya y revisa tu intervención para el role play</span></div>
+    <div class="item-texto"><h1 class="titulo">Role play</h1><span class="suave pequeno">Prepara, ensaya y revisa tus intervenciones</span></div>
     ${lista.length ? `<div class="seccion">${lista.map(tarjeta).join('')}</div>` : `
     <section class="tarjeta">
       <b style="font-size:17px">Tu primera estrategia</b>
@@ -56,7 +56,7 @@ export function vPortland() {
       <button class="btn primario grande" data-act="est-nueva">${icon('mas', 20)}Nueva estrategia</button>
     </section>`}
     <details class="tarjeta sobre-grupo">
-      <summary><b>Sobre el grupo</b><span class="mini suave">Intención, estructura y tus notas</span></summary>
+      <summary><b>Sobre el grupo Hexaflex en vivo</b><span class="mini suave">Intención, estructura y tus notas</span></summary>
       <p class="pequeno" style="line-height:1.5">Un entorno de práctica experiencial sobre los procesos de ACT, dinámico y lúdico: experimentar la flexibilidad en uno mismo, practicar cómo facilitarla en otros y sostenernos como grupo.</p>
       <div class="estructura">
         <div><b class="t">Inicio</b><span>Meditación guiada para poner el tono.</span></div>
@@ -66,7 +66,7 @@ export function vPortland() {
       <label for="pl-notas" class="etiqueta" style="margin-top:6px">Mis notas sobre la dinámica</label>
       <textarea id="pl-notas" rows="4" placeholder="Dudas, ideas, lo que quieres probar…">${esc(notas)}</textarea>
     </details>
-    </div>${lista.length ? `<button class="fab" data-act="est-nueva">${icon('mas', 22)}Nueva estrategia</button>` : ''}${nav('portland')}`,
+    </div>${lista.length ? `<button class="fab" data-act="est-nueva">${icon('mas', 22)}Nueva estrategia</button>` : ''}${nav('roleplay')}`,
     mount(r) {
       const t = r.querySelector('#pl-notas');
       t?.addEventListener('change', () => { S.actualizar((s) => { s.portland = { ...(s.portland || {}), notas: t.value.trim() }; }); toast('Notas guardadas.', { ms: 1500 }); });
@@ -133,7 +133,7 @@ export function vEstrategia(id) {
     : '<p class="pequeno suave">Después del role play: lo que te dijeron, qué funcionó y qué cambiarías.</p>';
 
   return {
-    html: `<div class="pantalla sin-nav">${volver('#/portland', 'Estrategia')}
+    html: `<div class="pantalla sin-nav">${volver('#/roleplay', 'Estrategia')}
     <div class="item-texto">${x.fecha ? `<span class="tipo" style="color:var(--verde)">${esc(fmtFecha(x.fecha))}</span>` : ''}<h1 class="titulo" style="font-size:26px">${esc(x.titulo)}</h1></div>
     ${x.procesos.length ? `<span class="insignias">${chips(x.procesos)}</span>` : ''}
     ${bloque(1, 'diseno', 'Diseñar', p.diseno, diseno, editar('diseno', p.diseno ? 'Editar' : 'Empezar'))}
@@ -291,7 +291,7 @@ function modalEnsayo(id, alTerminar) {
   const x = est(id);
   abrirModal(`<h2>Anotar ensayo</h2>
   <form id="f-ens" class="seccion">
-    <div class="campo"><span class="etiqueta">Cómo has practicado</span>${seg('modo', Object.entries(MODOS).map(([k, t]) => [k, t.replace('En voz alta, solo', 'Solo').replace('Con un compañero', 'Compañero').replace('En el Grupo Portland', 'Grupo')]), 'solo')}</div>
+    <div class="campo"><span class="etiqueta">Cómo has practicado</span>${seg('modo', Object.entries(MODOS).map(([k, t]) => [k, t.replace('En voz alta, solo', 'Solo').replace('Con un compañero', 'Compañero').replace('En el grupo', 'Grupo')]), 'solo')}</div>
     <div class="campo"><label for="en-nota">Qué notaste <span class="suave" style="font-weight:400">(opcional)</span></label><textarea id="en-nota" name="nota" rows="3" placeholder="Dónde te trabaste, qué paso fluyó…"></textarea></div>
     <div class="botones"><button type="button" class="btn" data-cerrar>Cancelar</button><button class="btn primario">Guardar</button></div>
   </form>`, (d) => {
@@ -315,14 +315,14 @@ function aDiario(x) {
     r.funciono && `Qué funcionó: ${r.funciono}`,
     r.cambiaria && `Qué cambiaría: ${r.cambiaria}`,
   ].filter(Boolean).join('\n\n');
-  const entrada = { id: S.nuevoId(), tipo: 'reflexion', fecha: r.fecha || hoyISO(), titulo: `Portland · ${x.titulo}`, texto, procesos: [...new Set([...x.procesos, ...(r.procesosVistos || [])])], libroId: '', estrategiaId: x.id, creado: new Date().toISOString() };
+  const entrada = { id: S.nuevoId(), tipo: 'reflexion', fecha: r.fecha || hoyISO(), titulo: `Role play · ${x.titulo}`, texto, procesos: [...new Set([...x.procesos, ...(r.procesosVistos || [])])], libroId: '', estrategiaId: x.id, creado: new Date().toISOString() };
   S.actualizar((s) => { s.diario.push(entrada); x.diarioId = entrada.id; });
   toast('Reflexión creada en tu Diario.'); irA(`#/diario/e/${encodeURIComponent(entrada.id)}`);
 }
 // Revisión → fichas del Hexaflex (cuenta como práctica en role play)
 function aFichas(x) {
   const r = x.revision || {};
-  const texto = [`Grupo Portland · ${x.titulo}`, r.funciono && `Funcionó: ${r.funciono}`, r.cambiaria && `Cambiaría: ${r.cambiaria}`].filter(Boolean).join('\n');
+  const texto = [`Role play · ${x.titulo}`, r.funciono && `Funcionó: ${r.funciono}`, r.cambiaria && `Cambiaría: ${r.cambiaria}`].filter(Boolean).join('\n');
   let n = 0;
   S.actualizar(() => {
     for (const f of x.fichas.map(ficha).filter(Boolean)) {
@@ -334,7 +334,7 @@ function aFichas(x) {
   toast(n ? `Práctica anotada en ${n} ficha${n === 1 ? '' : 's'} (nivel role play).` : 'Ya estaba anotada en tus fichas.');
 }
 
-export const accionesPortland = {
+export const accionesRoleplay = {
   'est-nueva': () => modalNueva(),
   'est-ensayo': (b) => modalEnsayo(b.dataset.id),
   'est-a-diario': (b) => aDiario(est(b.dataset.id)),
@@ -346,7 +346,7 @@ export const accionesPortland = {
   },
   'est-borrar': (b) => confirmar('¿Eliminar esta estrategia?', 'Se borran su guion, ensayos y revisión. Lo que llevaste al Diario se conserva.', 'Eliminar', () => {
     S.actualizar((s) => { s.estrategias = s.estrategias.filter((x) => x.id !== b.dataset.id); s.borrados = [...new Set([...(s.borrados || []), b.dataset.id])]; });
-    irA('#/portland');
+    irA('#/roleplay');
   }),
   // Listas del guion
   'est-anadir': (b) => { const id = location.hash.split('/')[3]; const l = borrador[decodeURIComponent(id)]?.[b.dataset.l]; if (!l) return; l.push(b.dataset.l === 'pasos' ? { id: S.nuevoId(), etapa: '', texto: '' } : { id: S.nuevoId(), si: '', entonces: '' }); ctx.render(); app().querySelector(`[data-lista="${b.dataset.l}"][data-i="${l.length - 1}"] input`)?.focus(); },

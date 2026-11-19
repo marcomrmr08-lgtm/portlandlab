@@ -53,7 +53,7 @@ export function vHexaflex() {
       <div class="barra" aria-hidden="true"><div style="width:${(total / 18) * 100}%"></div></div>
       <span class="mini suave" style="line-height:1.4">Cada proceso tiene tres niveles: <b>escrito</b> (tu versión de una ficha), <b>audio</b> (grabarte recitándola) y <b>role play</b> (practicarla con un compañero).</span></div>
     <div class="seccion">${MODELO.pilares.map((pl) => `<div class="pilar-fila pilar-${pl.k}"><b>${pl.nombre}</b><span class="pequeno suave">${esc(pl.texto)}</span></div>`).join('')}</div>
-    <div class="botones"><a href="#/hexaflex/banco" class="btn">${icon('diario', 18)}Banco (${HX().fichas.length})</a><a href="#/lecturas" class="btn">${icon('guia', 18)}Lecturas (${b.filter((x) => x.estado === 'leido').length}/${b.length})</a></div>
+    <div class="botones"><a href="#/hexaflex/banco" class="btn">${icon('diario', 18)}Banco (${HX().fichas.length})</a><a href="#/biblioteca/lecturas" class="btn">${icon('guia', 18)}Lecturas (${b.filter((x) => x.estado === 'leido').length}/${b.length})</a></div>
     </div>${nav('hexaflex')}`,
   };
 }

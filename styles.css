@@ -500,6 +500,10 @@ button.estado-sync { cursor: pointer; }
 .entrada-titulo { font-size: 16px; font-weight: 700; line-height: 1.3; }
 .entrada-extracto { font-size: 14px; color: var(--suave); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .insignia.tipo-idea { background: var(--ambar-cl); color: #7A4A0E; }
+.insignia.tipo-nota { background: var(--verde-cl); color: var(--verde); }
+.rapido { gap: 10px; }
+.rapido textarea { border: 0; padding: 2px 0; resize: vertical; font-size: 16px; background: transparent; }
+.rapido .segmentado { flex: 1 1 220px; }
 .insignia.tipo-reflexion { background: var(--morado-cl); color: var(--morado); }
 .mes-cab { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--suave); margin: 10px 0 -2px 2px; }
 .texto-diario { min-height: 220px; line-height: 1.55; }

@@ -94,12 +94,6 @@ export async function escribirDatos(obj) {
   const r = await multipart({ name: CONFIG.ARCHIVO_DATOS, parents: ['appDataFolder'] }, cuerpo, 'application/json');
   idDatos = r.id; return r;
 }
-// Lee (sin tocarlo) el archivo de datos de Luria Lab, para traer las fichas del Hexaflex
-export async function leerDatosLuria() {
-  const id = await buscarOculto(CONFIG.ARCHIVO_LURIA);
-  if (!id) return null;
-  return (await api(`${DRIVE}/files/${id}?alt=media`)).json();
-}
 
 // ---------- Carpetas y archivos ----------
 async function existe(id) {

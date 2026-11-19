@@ -1,11 +1,11 @@
-// Lecturas: la bibliografía, unida al Diario. Cada lectura guarda su estado, por dónde vas,
+// Lecturas: la bibliografía, dentro de la Biblioteca. Cada lectura guarda su estado, por dónde vas,
 // citas y apuntes, y reúne las reflexiones del diario y las fichas del Hexaflex que salen de ella.
 import * as S from './store.js';
 import { PROCESOS, PILAR, proceso } from './procesos.js';
 import { esc, hoyISO, fmtCorta, toast, abrirModal, cerrarModal, icon } from './ui.js';
 import { ctx, app, irA, volver, seg, leerForm, confirmar, vNoEncontrado as noEncontrado } from './comun.js';
 
-const vNoEncontrado = () => noEncontrado('#/lecturas');
+const vNoEncontrado = () => noEncontrado('#/biblioteca/lecturas');
 export const ESTADOS = [['curso', 'Leyendo'], ['pendiente', 'Pendientes'], ['leido', 'Leídas']];
 export const TIPOS_LECTURA = ['Libro', 'Artículo', 'Capítulo', 'Otro'];
 const L = () => S.datos().biblio;
@@ -17,7 +17,7 @@ const fichas = (id) => S.datos().hexaflex.fichas.filter((f) => f.libroId === id)
 
 let filtro = 'curso';
 let q = '';
-// Lista (se muestra dentro de la pestaña Diario)
+// Lista (se muestra dentro de la Biblioteca)
 export function htmlLecturas() {
   const busq = q.trim().toLowerCase();
   const lista = L().filter((b) => b.estado === filtro && (!busq || [b.titulo, b.autor, b.notas].join(' ').toLowerCase().includes(busq)));
@@ -48,7 +48,7 @@ export function vLectura(id) {
   const refl = reflexiones(b.id); const fs = fichas(b.id);
   const citas = [...(b.citas || [])].reverse();
   return {
-    html: `<div class="pantalla sin-nav">${volver('#/lecturas', 'Lectura', `<button class="btn texto" data-act="lec-editar" data-id="${esc(b.id)}">${icon('editar', 18)}Editar</button>`)}
+    html: `<div class="pantalla sin-nav">${volver('#/biblioteca/lecturas', 'Lectura', `<button class="btn texto" data-act="lec-editar" data-id="${esc(b.id)}">${icon('editar', 18)}Editar</button>`)}
     <div class="item-texto"><span class="tipo suave">${esc(b.tipo || 'Libro')}${b.anio ? ` · ${esc(b.anio)}` : ''}</span><h1 class="titulo" style="font-size:24px">${esc(b.titulo)}</h1>${b.autor ? `<span class="suave">${esc(b.autor)}</span>` : ''}</div>
     ${(b.procesos || []).length ? `<span class="insignias">${chips(b.procesos)}</span>` : ''}
     ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="pequeno" style="font-weight:700;display:flex;gap:6px;align-items:center">${icon('externo', 16)}Abrir enlace</a>` : ''}
@@ -115,7 +115,7 @@ function modalLectura(id) {
     });
     d.querySelector('#b-del-lec')?.addEventListener('click', () => confirmar('¿Eliminar esta lectura?', 'Se borran sus citas. Las reflexiones del diario y las fichas se conservan.', 'Eliminar', () => {
       S.actualizar((s) => { s.biblio = s.biblio.filter((x) => x.id !== b.id); s.borrados = [...new Set([...(s.borrados || []), b.id])]; });
-      irA('#/lecturas');
+      irA('#/biblioteca/lecturas');
     }));
   });
 }

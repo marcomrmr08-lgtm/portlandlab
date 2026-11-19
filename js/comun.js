@@ -1,4 +1,4 @@
-// Piezas de interfaz que comparten las secciones (Diario, Hexaflex, Grupo Portland, Ajustes)
+// Piezas de interfaz que comparten las secciones (Hexaflex, Biblioteca, Diario, Role play, Ajustes)
 import { esc, icon, abrirModal, cerrarModal } from './ui.js';
 
 // app.js rellena estas funciones al arrancar (render, google, etc.)
@@ -7,11 +7,11 @@ export const ctx = { render: () => {}, google: async () => {}, conectado: () => 
 export const app = () => document.getElementById('app');
 export function irA(ruta) { if (location.hash === ruta) ctx.render(); else location.hash = ruta; }
 
-export const NAV = [['diario', 'Diario', 'diario'], ['hexaflex', 'Hexaflex', 'hexa'], ['portland', 'Portland', 'pareja'], ['ajustes', 'Ajustes', 'ajustes']];
+export const NAV = [['hexaflex', 'Hexaflex', 'hexa'], ['biblioteca', 'Biblioteca', 'guia'], ['diario', 'Diario', 'diario'], ['roleplay', 'Role play', 'pareja'], ['ajustes', 'Ajustes', 'ajustes']];
 export const nav = (activo) => `<nav class="nav" aria-label="Secciones"><div class="nav-in">${NAV.map(([r, t, i]) =>
   `<a href="#/${r}" class="${r === activo ? 'activo' : ''}" ${r === activo ? 'aria-current="page"' : ''}>${icon(i, 24)}${t}</a>`).join('')}</div></nav>`;
 
-const RAICES = ['#/diario', '#/hexaflex', '#/portland', '#/ajustes'];
+const RAICES = ['#/hexaflex', '#/biblioteca', '#/biblioteca/lecturas', '#/diario', '#/roleplay', '#/ajustes'];
 export const volver = (href, texto, derecha = '') => `<header class="cabecera" ${RAICES.includes(href) ? 'data-raiz' : ''}><div class="cabecera-izq"><a href="${href}" class="volver" aria-label="Volver">${icon('atras', 24)}</a><span class="titulo-m">${esc(texto)}</span></div>${derecha}</header>`;
 
 export const seg = (nombre, opciones, valor) => `<div class="segmentado" role="radiogroup">${opciones.map(([v, t]) => {
@@ -40,4 +40,4 @@ export async function copiar(texto, aviso = 'Copiado.') {
   try { await navigator.clipboard.writeText(texto); toast(aviso); } catch { abrirModalTexto(texto); }
 }
 
-export const vNoEncontrado = (href = '#/diario') => ({ html: `<div class="pantalla sin-nav">${volver(href, 'No encontrado')}<p class="vacio">Esto ya no existe.</p></div>` });
+export const vNoEncontrado = (href = '#/hexaflex') => ({ html: `<div class="pantalla sin-nav">${volver(href, 'No encontrado')}<p class="vacio">Esto ya no existe.</p></div>` });

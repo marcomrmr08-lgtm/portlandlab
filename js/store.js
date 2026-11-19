@@ -1,4 +1,4 @@
-// Datos de Flexeo: diario, lecturas, Hexaflex y estrategias del Grupo Portland.
+// Datos de Flexeo: Hexaflex, biblioteca (apuntes y lecturas), diario y role plays.
 // Se guardan siempre en este dispositivo y, si hay conexión con Google, en un archivo oculto de tu Drive.
 import { FICHAS_BASE, BIBLIO_BASE } from './hexaflexBase.js';
 
@@ -14,6 +14,7 @@ function porDefecto() {
     hexaflex: { modelo: {}, procesos: {}, fichas: [], notas: {} },
     biblio: null,
     diario: [],
+    apuntes: [],
     estrategias: [],
     portland: { notas: '' },
     borrados: [],
@@ -22,7 +23,7 @@ function porDefecto() {
 
 export const nuevoId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 
-// Seguridad: los datos pueden venir de Drive o de Luria Lab. Se descarta lo que no tenga la forma esperada.
+// Seguridad: los datos pueden venir de Drive. Se descarta lo que no tenga la forma esperada.
 const ID_OK = /^[\w.:-]{1,128}$/;
 function sanearIds(o, prof = 0) {
   if (!o || typeof o !== 'object' || prof > 8) return;
@@ -39,6 +40,7 @@ function sanear(s) {
   if (s.hexaflex) s.hexaflex.fichas = conId(s.hexaflex.fichas);
   if (s.biblio) s.biblio = conId(s.biblio);
   s.estrategias = conId(s.estrategias);
+  s.apuntes = conId(s.apuntes).filter((a) => typeof a.archivoId === 'string');
   s.diario = conId(s.diario).filter((e) => typeof e.fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.fecha));
   return s;
 }
@@ -50,7 +52,9 @@ function completar(s) {
   s.ajustes.carpetas = s.ajustes.carpetas || {};
   if (!Array.isArray(s.borrados)) s.borrados = [];
   if (!Array.isArray(s.diario)) s.diario = [];
-  for (const e of s.diario) { e.tipo = e.tipo === 'idea' ? 'idea' : 'reflexion'; e.procesos = Array.isArray(e.procesos) ? e.procesos : []; }
+  if (!Array.isArray(s.apuntes)) s.apuntes = [];
+  for (const a of s.apuntes) { a.titulo = String(a.titulo || 'Sin título'); a.temas = Array.isArray(a.temas) ? a.temas : []; a.emoji = String(a.emoji || '').slice(0, 8); }
+  for (const e of s.diario) { e.tipo = ['idea', 'reflexion', 'nota'].includes(e.tipo) ? e.tipo : 'reflexion'; e.procesos = Array.isArray(e.procesos) ? e.procesos : []; }
   s.portland = s.portland && typeof s.portland === 'object' ? s.portland : { notas: '' };
   delete s.grupos; delete s.grupoActivo;
   if (!s.hexaflex) s.hexaflex = d.hexaflex;
@@ -126,28 +130,8 @@ export function fusionar(local, remoto) {
     biblio: unir(R.biblio, L.biblio),
     diario: unir(R.diario, L.diario),
     estrategias: unir(R.estrategias, L.estrategias),
+    apuntes: unir(R.apuntes, L.apuntes),
     portland: { notas: base.portland?.notas || otro.portland?.notas || '' },
     borrados: [...borrados],
   };
-}
-
-// Trae las fichas, notas y libros del Hexaflex de Luria Lab (sin tocar Luria Lab).
-// Devuelve cuántas fichas y libros nuevos se han añadido.
-export function importarLuria(luria) {
-  const L = sanear(JSON.parse(JSON.stringify(luria || {})));
-  const hxL = L.hexaflex || {};
-  let fichas = 0; let libros = 0;
-  actualizar((s) => {
-    const ids = new Set(s.hexaflex.fichas.map((f) => f.id));
-    for (const f of conId(hxL.fichas)) {
-      if (ids.has(f.id)) continue;
-      // Los audios se quedan en Luria Lab (están en su dispositivo y su carpeta); los vídeos de Drive sí se enlazan
-      s.hexaflex.fichas.push({ ...f, audios: [], videos: f.videos || [], exp: f.exp || {}, notasExp: f.notasExp || [], procesos: f.procesos || [], deLuria: true });
-      fichas++;
-    }
-    for (const [k, v] of Object.entries(hxL.notas || {})) if (v && !s.hexaflex.notas[k]) s.hexaflex.notas[k] = v;
-    const libs = new Set(s.biblio.map((b) => b.id));
-    for (const b of conId(L.biblio)) if (!libs.has(b.id)) { s.biblio.push(b); libros++; }
-  });
-  return { fichas, libros };
 }
