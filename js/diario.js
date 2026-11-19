@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Diario: notas, ideas y reflexiones rápidas. Cada entrada puede enlazarse a una lectura de la Biblioteca.
 // Se guardan con el resto de tus datos (este dispositivo y tu Drive).
 import * as S from './store.js';

@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Conexión con Google: inicio de sesión, Drive y Sheets. Sin acceso al correo.
 // drive.file: solo los archivos que crea la app · drive.appdata: su archivo oculto de datos
 import { CONFIG } from './config.js';

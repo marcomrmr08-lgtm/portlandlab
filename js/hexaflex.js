@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Hexaflex: teoría de los seis procesos, banco de fichas y práctica en tres niveles (escrito, audio y role play).
 // Portado de Luria Lab: los mismos datos y pantallas, para poder mejorarlo aquí.
 import * as S from './store.js';

@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Utilidades de interfaz: escapado, fechas, avisos, ventanas y almacenamiento local de archivos
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (

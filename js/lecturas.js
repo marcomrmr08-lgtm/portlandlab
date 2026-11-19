@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Lecturas: la bibliografía, dentro de la Biblioteca. Cada lectura guarda su estado, por dónde vas,
 // citas y apuntes, y reúne las reflexiones del diario y las fichas del Hexaflex que salen de ella.
 import * as S from './store.js';

@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Role play: preparador personal de intervenciones para los role plays del grupo.
 // Cada estrategia sigue cuatro pasos: diseñar, guion, ensayar (con modo práctica) y revisar.
 // Es personal: se guarda con el resto de tus datos (este dispositivo y tu Drive).

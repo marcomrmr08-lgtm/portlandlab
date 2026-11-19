@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Piezas de interfaz que comparten las secciones (Hexaflex, Biblioteca, Diario, Role play, Ajustes)
 import { esc, icon, abrirModal, cerrarModal } from './ui.js';
 

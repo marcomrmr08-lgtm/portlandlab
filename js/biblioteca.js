@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Biblioteca: tus apuntes en PDF (como la Guía clínica de Luria Lab) y tus lecturas.
 // Los PDF se suben a tu Drive (carpeta «Flexeo/Apuntes») y se ven con un visor propio.
 // La primera vez que abres un PDF se guarda en el dispositivo para que vuelva a abrir rápido y sin conexión.

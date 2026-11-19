@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Datos de Flexeo: Hexaflex, biblioteca (apuntes y lecturas), diario y role plays.
 // Se guardan siempre en este dispositivo y, si hay conexión con Google, en un archivo oculto de tu Drive.
 import { FICHAS_BASE, BIBLIO_BASE } from './hexaflexBase.js';

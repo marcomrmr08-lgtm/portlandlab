@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Los seis procesos del modelo de flexibilidad psicológica (Hexaflex) y su polo de inflexibilidad
 export const PROCESOS = [
   { k: 'aceptacion', nombre: 'Aceptación', opuesto: 'Evitación experiencial' },

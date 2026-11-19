@@ -20,3 +20,7 @@ En el dispositivo y, al conectar con Google, en un archivo oculto del Drive de c
 `drive.file` y `drive.appdata` (mismo ID de cliente que Luria Lab, pero sin ninguna conexión con sus datos). Sin acceso al correo.
 
 Sin ID de cliente (`CLIENT_ID: ''`) la app funciona en modo prueba: todo se guarda solo en el dispositivo.
+
+## Derechos
+
+© 2026 Marco Martínez. Todos los derechos reservados. Versión de prueba para uso personal de las personas invitadas. No se permite copiar, modificar ni distribuir el código ni los contenidos sin permiso del autor. Ver `LICENSE`.

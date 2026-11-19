@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Configuración de Flexeo.
 // CLIENT_ID: el mismo «ID de cliente» de Google Cloud que Luria Lab (las dos apps viven en
 // https://marcomrmr08-lgtm.github.io, que ya es un origen autorizado). Mientras esté vacío,

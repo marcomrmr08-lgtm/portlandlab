@@ -1,3 +1,4 @@
+// © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Flexeo · Hexaflex, Biblioteca (apuntes y lecturas), Diario y Role play
 import * as S from './store.js';
 import * as G from './google.js';
@@ -9,7 +10,7 @@ import * as B from './biblioteca.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.4.1';
+const VERSION = '1.4.2';
 S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -92,7 +93,7 @@ function vAjustes() {
       <button class="btn" data-act="exportar">${icon('descargar', 18)}Descargar una copia de mis datos</button>
       <button class="btn peligro" data-act="borrar-todo">${icon('papelera', 18)}Cerrar sesión y borrar este dispositivo</button>
     </section>
-    <p class="mini suave" style="text-align:center">Flexeo ${VERSION}</p>
+    <p class="mini suave" style="text-align:center;line-height:1.5">Flexeo ${VERSION} · versión de prueba para uso personal<br>© 2026 Marco Martínez. Todos los derechos reservados.</p>
     </div>${nav('ajustes')}`,
   };
 }
@@ -155,7 +156,7 @@ function lateral(sec) {
   const estado = !G.configurado() ? `<span class="lat-estado">${icon('candado', 14)}Modo prueba · solo este dispositivo</span>`
     : barraEstado() || (G.conectado() ? '<span class="lat-estado ok"><i></i>Conectado a Google</span>' : '<button class="btn pequeno" data-act="conectar" style="width:100%">Conectar con Google</button>');
   return `<aside class="lateral" aria-label="Menú"><a href="#/hexaflex" class="lat-marca">Flexeo</a>
-    <nav class="lat-grupo">${NAV.map(enlace).join('')}</nav><div class="lat-pie">${estado}</div></aside>`;
+    <nav class="lat-grupo">${NAV.map(enlace).join('')}</nav><div class="lat-pie">${estado}<span class="mini suave" style="display:block;margin-top:10px">© 2026 Marco Martínez</span></div></aside>`;
 }
 
 function render() {
