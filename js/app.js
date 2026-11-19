@@ -9,7 +9,7 @@ import * as B from './biblioteca.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.4.0';
+const VERSION = '1.4.1';
 S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -182,6 +182,13 @@ function render() {
 ctx.render = render;
 
 window.addEventListener('hashchange', () => { cerrarModal(); render(); window.scrollTo(0, 0); });
+// Al abrir la app desde cero, siempre se empieza en el Hexaflex (el móvil recuerda la dirección con la que se instaló).
+// Si solo se recarga durante el uso, se queda donde estaba.
+(() => {
+  let yaAbierta = false;
+  try { yaAbierta = sessionStorage.getItem('pl-abierta') === '1'; sessionStorage.setItem('pl-abierta', '1'); } catch {}
+  if (!yaAbierta && location.hash !== '#/hexaflex') history.replaceState(null, '', '#/hexaflex');
+})();
 render();
 guardarCopia('Al abrir la app', 6 * 3600e3);
 
