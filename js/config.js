@@ -1,7 +1,7 @@
 // © 2026 Marco Martínez. Todos los derechos reservados. Ver LICENSE.
 // Configuración de Flexeo.
-// CLIENT_ID: el mismo «ID de cliente» de Google Cloud que Luria Lab (las dos apps viven en
-// https://marcomrmr08-lgtm.github.io, que ya es un origen autorizado). Mientras esté vacío,
+// CLIENT_ID: «ID de cliente» del proyecto propio de Flexeo en Google Cloud
+// (origen autorizado: https://marcomrmr08-lgtm.github.io). Mientras esté vacío,
 // la app funciona en modo prueba: guarda todo solo en este dispositivo.
 export const CONFIG = {
   CLIENT_ID: '1006302280856-8pko1mot95b2r44403jhh45342c3k79m.apps.googleusercontent.com',
