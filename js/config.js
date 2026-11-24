@@ -4,7 +4,7 @@
 // https://marcomrmr08-lgtm.github.io, que ya es un origen autorizado). Mientras esté vacío,
 // la app funciona en modo prueba: guarda todo solo en este dispositivo.
 export const CONFIG = {
-  CLIENT_ID: '632485670315-44h0reldorhd0pc09qvivhc9qdj3cdhv.apps.googleusercontent.com',
+  CLIENT_ID: '1006302280856-8pko1mot95b2r44403jhh45342c3k79m.apps.googleusercontent.com',
   // Sin acceso al correo: solo los archivos que crea la app y su archivo oculto de datos.
   SCOPES: [
     'https://www.googleapis.com/auth/drive.file',
