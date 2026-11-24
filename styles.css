@@ -590,35 +590,39 @@ a.seg-btn { display: flex; align-items: center; justify-content: center; text-de
 a.estado-sync { text-decoration: none; }
 
 /* Guía de bienvenida */
-.guia { position: fixed; inset: 0; z-index: 50; }
-.guia-capa { position: absolute; inset: 0; }
-.guia-foco { position: fixed; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(43, 22, 10, .62); transition: left .35s ease, top .35s ease, width .35s ease, height .35s ease, opacity .2s; pointer-events: none; opacity: 0; left: 50%; top: 50%; width: 0; height: 0; }
-.guia-foco::after { content: ''; position: absolute; inset: -4px; border-radius: 22px; border: 2px solid #FFB98A; animation: guia-pulso 1.6s ease-out infinite; }
-@keyframes guia-pulso { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.08); } }
-.guia-capa { transition: background .2s; }
-.guia.sin-foco .guia-capa { background: rgba(43, 22, 10, .62); }
-.guia-tarjeta { position: fixed; width: min(340px, calc(100vw - 24px)); background: var(--superficie); color: var(--tinta); border-radius: 20px; padding: 18px; box-shadow: 0 14px 40px rgba(43, 22, 10, .35); display: flex; flex-direction: column; gap: 10px; transition: left .35s ease, top .35s ease; }
-.guia-tarjeta.entra { animation: guia-entra .3s ease; }
-@keyframes guia-entra { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
-.guia-tarjeta p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--gris); }
-.guia-tarjeta p b { color: var(--tinta); }
-.guia-cab { display: flex; gap: 12px; align-items: center; }
-.guia-cab h2 { font-size: 19px; font-weight: 800; margin: 0; }
-.guia-ico { width: 42px; height: 42px; border-radius: 13px; background: var(--verde-cl); color: var(--verde); display: grid; place-items: center; flex-shrink: 0; }
-.guia-num { font-size: 12px; font-weight: 700; color: var(--verde); letter-spacing: .04em; text-transform: uppercase; }
-.guia-pie { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
-.guia-botones { display: flex; gap: 4px; }
-.guia-puntos { display: flex; gap: 5px; }
-.guia-puntos i { width: 7px; height: 7px; border-radius: 4px; background: var(--linea); transition: width .25s, background .25s; }
-.guia-puntos i.hecho { background: #E9A27D; }
-.guia-puntos i.on { width: 20px; background: var(--verde); }
-.guia-tarjeta.portada { text-align: center; align-items: stretch; padding: 24px 20px 14px; }
-.guia-tarjeta.portada h2 { font-size: 22px; font-weight: 800; margin: 0; text-wrap: balance; }
-.guia-logo { width: 64px; height: 64px; margin: 0 auto 4px; animation: guia-flota 3s ease-in-out infinite; }
-@keyframes guia-flota { 50% { transform: translateY(-4px) rotate(-4deg); } }
-.guia-mini { display: flex; justify-content: center; gap: 10px; margin: 6px 0 8px; }
-.guia-mini span { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--verde); }
-.guia-mini span svg { width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: var(--verde-cl); }
-.guia-mini small { font-size: 10.5px; font-weight: 700; color: var(--gris); }
-.guia.sale { opacity: 0; transition: opacity .2s; }
-@media (prefers-reduced-motion: reduce) { .guia-foco, .guia-tarjeta { transition: none; } .guia-foco::after, .guia-logo, .guia-tarjeta.entra { animation: none; } }
+.tour { position: fixed; inset: 0; z-index: 50; }
+.tour-capa { position: absolute; inset: 0; }
+.tour-foco { position: fixed; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(43, 22, 10, .62); transition: left .35s ease, top .35s ease, width .35s ease, height .35s ease, opacity .2s; pointer-events: none; opacity: 0; left: 50%; top: 50%; width: 0; height: 0; }
+.tour-foco::after { content: ''; position: absolute; inset: -4px; border-radius: 22px; border: 2px solid #FFB98A; animation: tour-pulso 1.6s ease-out infinite; }
+@keyframes tour-pulso { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.08); } }
+.tour-capa { transition: background .2s; }
+.tour.sin-foco .tour-capa { background: rgba(43, 22, 10, .62); }
+.tour-tarjeta { position: fixed; width: min(340px, calc(100vw - 24px)); background: var(--superficie); color: var(--tinta); border-radius: 20px; padding: 18px; box-shadow: 0 14px 40px rgba(43, 22, 10, .35); display: flex; flex-direction: column; gap: 10px; transition: left .35s ease, top .35s ease; }
+.tour-tarjeta.entra { animation: tour-entra .3s ease; }
+@keyframes tour-entra { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+.tour-tarjeta p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--gris); }
+.tour-tarjeta p b { color: var(--tinta); }
+.tour-cab { display: flex; gap: 12px; align-items: center; }
+.tour-cab h2 { font-size: 19px; font-weight: 800; margin: 0; }
+.tour-ico { width: 42px; height: 42px; border-radius: 13px; background: var(--verde-cl); color: var(--verde); display: grid; place-items: center; flex-shrink: 0; }
+.tour-num { font-size: 12px; font-weight: 700; color: var(--verde); letter-spacing: .04em; text-transform: uppercase; }
+.tour-pie { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.tour-botones { display: flex; gap: 4px; }
+.tour-puntos { display: flex; gap: 5px; }
+.tour-puntos i { width: 7px; height: 7px; border-radius: 4px; background: var(--linea); transition: width .25s, background .25s; }
+.tour-puntos i.hecho { background: #E9A27D; }
+.tour-puntos i.on { width: 20px; background: var(--verde); }
+.tour-tarjeta.portada { text-align: center; align-items: stretch; padding: 24px 20px 14px; }
+.tour-tarjeta.portada h2 { font-size: 22px; font-weight: 800; margin: 0; text-wrap: balance; }
+.tour-logo { width: 64px; height: 64px; margin: 0 auto 4px; animation: tour-flota 3s ease-in-out infinite; }
+@keyframes tour-flota { 50% { transform: translateY(-4px) rotate(-4deg); } }
+.tour-mini { display: flex; justify-content: center; gap: 10px; margin: 6px 0 8px; }
+.tour-mini span { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--verde); }
+.tour-mini span svg { width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: var(--verde-cl); }
+.tour-mini small { font-size: 10.5px; font-weight: 700; color: var(--gris); }
+.tour.sale { opacity: 0; transition: opacity .2s; }
+@media (prefers-reduced-motion: reduce) { .tour-foco, .tour-tarjeta { transition: none; } .tour-foco::after, .tour-logo, .tour-tarjeta.entra { animation: none; } }
+
+/* Apuntes dentro del Hexaflex */
+.apunte-mini { text-decoration: none; color: inherit; }
+.apunte-mini-ico { width: 34px; height: 34px; border-radius: 10px; background: var(--verde-cl); color: var(--verde); display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }

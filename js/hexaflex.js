@@ -8,6 +8,7 @@ import { TEORIA, MODELO } from './hexaflexBase.js';
 import { ILUSTRACION } from './ilustraciones.js';
 import { PROCESOS, TIPOS_FICHA, PILAR, proceso } from './procesos.js';
 import { esc, hoyISO, fmtCorta, fmtNum, toast, abrirModal, cerrarModal, conCarga, idbGet, idbSet, icon } from './ui.js';
+import { htmlApuntesDe } from './biblioteca.js';
 import { ctx, app, irA, nav, volver, seg, leerForm, confirmar, vNoEncontrado as noEncontrado } from './comun.js';
 
 const RAIZ = CONFIG.CARPETA_RAIZ;
@@ -87,7 +88,10 @@ export function vHxProceso(k) {
       ${t.pregunta ? `<div class="aviso-caja">${icon('bocadillo', 18)}<span>${esc(t.pregunta)}</span></div>` : ''}
       <section class="tarjeta"><label for="n-${k}" class="tipo c-morado" style="font-size:13px">Mis notas de Hayes</label>
         <textarea id="n-${k}" data-nota="${k}" rows="6" placeholder="Completa o corrige con tu lectura del libro" style="border:0;padding:0">${esc(HX().notas[k])}</textarea>
-        <span class="mini suave">Se guarda solo. <span class="guardado c-verde" style="font-weight:700"></span></span></section>`;
+        <span class="mini suave">Se guarda solo. <span class="guardado c-verde" style="font-weight:700"></span></span></section>
+      <section class="tarjeta"><span class="tipo c-morado" style="font-size:13px">Mis apuntes en PDF</span>
+        ${htmlApuntesDe({ tema: p.nombre }) || '<span class="pequeno suave">Sube tus apuntes de este proceso y los tendrás aquí y en la Biblioteca.</span>'}
+        <button class="btn" data-act="ap-subir" data-temas="${esc(p.nombre)}">${icon('subir', 18)}Subir un PDF</button></section>`;
   } else {
     cuerpo = `<div class="fila-entre"><span class="pequeno suave">${fichas.length} ficha${fichas.length === 1 ? '' : 's'}</span><a href="#/hexaflex/editar/nueva?p=${k}" class="btn texto">${icon('mas', 18)} Añadir</a></div>
       <div class="seccion">${fichas.map(tarjetaFicha).join('') || '<p class="vacio">Aún no hay fichas de este proceso.</p>'}</div>`;
@@ -138,6 +142,9 @@ export function vHxFicha(id) {
       <span class="mini suave">Se guarda en tu Drive (Flexeo › Hexaflex › Role plays).</span>`)}
     <button class="btn" data-act="hx-practica" data-id="${esc(f.id)}">Anotar una práctica (en mí, role play o en terapia)</button>
     ${(f.notasExp || []).map((x) => `<div class="feedback"><span class="tipo c-azul">${esc({ mi: 'En mí', rp: 'Role play', terapia: 'En terapia' }[x.donde] || '')} · ${esc(fmtCorta(x.fecha))}</span>${esc(x.texto)}</div>`).join('')}
+    <h2 class="etiqueta-grupo">Apuntes en PDF</h2>
+    <section class="tarjeta">${htmlApuntesDe({ fichaId: f.id }) || '<span class="pequeno suave">Adjunta tus apuntes sobre esta técnica. También quedarán guardados en la Biblioteca.</span>'}
+      <button class="btn" data-act="ap-subir" data-ficha="${esc(f.id)}" data-temas="${esc((f.procesos || []).map((k) => proceso(k)?.nombre).filter(Boolean).join('|'))}">${icon('subir', 18)}Subir un PDF</button></section>
     <h2 class="etiqueta-grupo">La ficha</h2>
     <section class="tarjeta">${dato('Objetivo', f.paraQue)}${dato('Cuándo usarlo', f.cuando)}${dato('Precauciones', f.precauciones)}${dato('Guion orientativo', f.guion)}${dato('Errores frecuentes', f.errores)}${dato('Variantes', f.variaciones)}
       ${dato('Fuente', [lib ? `${lib.autor} ${lib.titulo}` : '', f.pagina ? `p. ${f.pagina}` : '', !lib ? f.fuente : ''].filter(Boolean).join(' · '))}

@@ -1,6 +1,6 @@
 // Service worker: guarda la app en el dispositivo para que abra rápido y funcione sin conexión.
 // No guarda nada de Google (hoja del grupo, fichas, audios): eso siempre va directo a Google.
-const VERSION = 'portland-lab-v1.6.1';
+const VERSION = 'portland-lab-v1.7.0';
 const ARCHIVOS = [
   './', './index.html', './styles.css', './manifest.webmanifest', './privacidad.html', './condiciones.html',
   './js/app.js', './js/config.js', './js/comun.js', './js/google.js', './js/diario.js', './js/guia.js', './js/lecturas.js', './js/biblioteca.js', './js/hexaflex.js', './js/hexaflexBase.js',

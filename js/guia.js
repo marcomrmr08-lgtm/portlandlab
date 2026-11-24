@@ -31,7 +31,7 @@ function colocar() {
   if (!raiz) return;
   const p = PASOS[paso];
   const el = p && (visible(p.donde) || visible(tabDe(p.ruta)));
-  const foco = raiz.querySelector('.guia-foco'); const tarjeta = raiz.querySelector('.guia-tarjeta');
+  const foco = raiz.querySelector('.tour-foco'); const tarjeta = raiz.querySelector('.tour-tarjeta');
   const vw = window.innerWidth; const vh = window.innerHeight;
   raiz.classList.toggle('sin-foco', !el);
   if (!el) { foco.style.opacity = '0'; tarjeta.style.left = `${(vw - tarjeta.offsetWidth) / 2}px`; tarjeta.style.top = `${(vh - tarjeta.offsetHeight) / 2}px`; return; }
@@ -49,12 +49,12 @@ function colocar() {
 
 function pintar() {
   const p = PASOS[paso];
-  const t = raiz.querySelector('.guia-tarjeta');
+  const t = raiz.querySelector('.tour-tarjeta');
   t.classList.remove('entra'); void t.offsetWidth; t.classList.add('entra');
-  t.innerHTML = `<div class="guia-cab"><span class="guia-ico">${icon(p.ico, 22)}</span><div><span class="guia-num">${paso + 1} de ${PASOS.length}</span><h2 id="guia-titulo">${esc(p.titulo)}</h2></div></div>
+  t.innerHTML = `<div class="tour-cab"><span class="tour-ico">${icon(p.ico, 22)}</span><div><span class="tour-num">${paso + 1} de ${PASOS.length}</span><h2 id="guia-titulo">${esc(p.titulo)}</h2></div></div>
     <p>${p.texto}</p>
-    <div class="guia-pie"><div class="guia-puntos" aria-hidden="true">${PASOS.map((_, i) => `<i class="${i === paso ? 'on' : i < paso ? 'hecho' : ''}"></i>`).join('')}</div>
-      <span class="guia-botones">${paso > 0 ? '<button type="button" class="btn texto pequeno" data-guia="atras">Atrás</button>' : '<button type="button" class="btn texto pequeno" data-guia="fin">Saltar</button>'}
+    <div class="tour-pie"><div class="tour-puntos" aria-hidden="true">${PASOS.map((_, i) => `<i class="${i === paso ? 'on' : i < paso ? 'hecho' : ''}"></i>`).join('')}</div>
+      <span class="tour-botones">${paso > 0 ? '<button type="button" class="btn texto pequeno" data-guia="atras">Atrás</button>' : '<button type="button" class="btn texto pequeno" data-guia="fin">Saltar</button>'}
       <button type="button" class="btn primario pequeno" data-guia="sig">${paso === PASOS.length - 1 ? '¡Listo!' : 'Siguiente'}</button></span></div>`;
   t.querySelector('[data-guia="sig"]').focus({ preventScroll: true });
 }
@@ -89,13 +89,13 @@ function teclas(e) {
 
 // Pantalla de inicio de la guía (antes del primer paso)
 function portada() {
-  const t = raiz.querySelector('.guia-tarjeta');
-  raiz.querySelector('.guia-foco').style.opacity = '0';
+  const t = raiz.querySelector('.tour-tarjeta');
+  raiz.querySelector('.tour-foco').style.opacity = '0';
   t.classList.add('portada', 'entra');
-  t.innerHTML = `<img src="icons/icon.svg" alt="" class="guia-logo">
+  t.innerHTML = `<img src="icons/icon.svg" alt="" class="tour-logo">
     <h2 id="guia-titulo">Te enseño Flexeo en 30 segundos</h2>
     <p>Cinco paradas rápidas por la app. Puedes saltarla y verla cuando quieras desde Ajustes.</p>
-    <div class="guia-mini">${PASOS.map((p) => `<span>${icon(p.ico, 20)}<small>${esc(p.corto || p.titulo)}</small></span>`).join('')}</div>
+    <div class="tour-mini">${PASOS.map((p) => `<span>${icon(p.ico, 20)}<small>${esc(p.corto || p.titulo)}</small></span>`).join('')}</div>
     <button type="button" class="btn primario" data-guia="empezar">Empezar la guía</button>
     <button type="button" class="btn texto pequeno" data-guia="fin">Ahora no</button>`;
   requestAnimationFrame(colocar);
@@ -106,13 +106,13 @@ export function iniciarGuia({ conPortada = true, alAcabar } = {}) {
   if (raiz) return;
   alTerminar = alAcabar;
   raiz = document.createElement('div');
-  raiz.className = 'guia';
-  raiz.innerHTML = '<div class="guia-capa"></div><div class="guia-foco"></div><div class="guia-tarjeta" role="dialog" aria-modal="true" aria-labelledby="guia-titulo" aria-live="polite"></div>';
+  raiz.className = 'tour';
+  raiz.innerHTML = '<div class="tour-capa"></div><div class="tour-foco"></div><div class="tour-tarjeta" role="dialog" aria-modal="true" aria-labelledby="guia-titulo" aria-live="polite"></div>';
   document.body.appendChild(raiz);
   raiz.addEventListener('click', (e) => {
     const b = e.target.closest('[data-guia]'); if (!b) return;
     const a = b.dataset.guia;
-    if (a === 'empezar') { raiz.querySelector('.guia-tarjeta').classList.remove('portada'); ir(0); }
+    if (a === 'empezar') { raiz.querySelector('.tour-tarjeta').classList.remove('portada'); ir(0); }
     else if (a === 'sig') ir(paso + 1);
     else if (a === 'atras') ir(paso - 1);
     else if (a === 'fin') terminar();

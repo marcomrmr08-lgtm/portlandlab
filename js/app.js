@@ -11,7 +11,7 @@ import { iniciarGuia } from './guia.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal, abrirModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.6.1';
+const VERSION = '1.7.0';
 await S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================

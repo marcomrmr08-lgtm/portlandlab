@@ -60,14 +60,21 @@ function selectorEmoji(actual = '') {
 }
 const chipsTemas = (sel = []) => `<div class="campo"><span class="etiqueta">Temas</span><div class="chips">${TEMAS.map((t, i) => `<input type="checkbox" id="at-${i}" name="temas" value="${esc(t)}" ${sel.includes(t) ? 'checked' : ''}><label for="at-${i}">${esc(t)}</label>`).join('')}</div></div>`;
 
-function modalSubir() {
+// Lista compacta de apuntes (para las fichas y los procesos del Hexaflex)
+export function htmlApuntesDe({ tema = '', fichaId = '' } = {}) {
+  const lista = A().filter((e) => (fichaId && e.fichas?.includes(fichaId)) || (tema && e.temas?.includes(tema)))
+    .sort((x, y) => (y.fecha || '').localeCompare(x.fecha || ''));
+  return lista.map((e) => `<a class="medio apunte-mini" href="#/biblioteca/a/${encodeURIComponent(e.id)}"><span class="apunte-mini-ico">${e.emoji ? esc(e.emoji) : icon('doc', 18)}</span><span class="item-texto" style="flex:1;min-width:0"><b class="pequeno">${esc(e.titulo)}</b>${e.fuente ? `<span class="mini suave">${esc(e.fuente)}</span>` : ''}</span>${icon('sig', 16)}</a>`).join('');
+}
+
+export function modalSubir({ temas = [], fichaId = '' } = {}) {
   abrirModal(`<h2>Subir apuntes en PDF</h2>
     <form id="f-pdf" class="seccion">
       <div class="campo"><label for="a-pdf">Archivo PDF</label><input type="file" id="a-pdf" name="pdf" accept="application/pdf,.pdf" required></div>
       <div class="campo"><label for="a-titulo">Título</label><input id="a-titulo" name="titulo" required maxlength="140" placeholder="p. ej. Análisis funcional"></div>
       <div class="campo"><label for="a-fuente">Fuente <span class="suave" style="font-weight:400">(opcional)</span></label><input id="a-fuente" name="fuente" maxlength="140" placeholder="Tutoría, seminario, libro…"></div>
       ${selectorEmoji()}
-      ${chipsTemas()}
+      ${chipsTemas(temas)}
       ${G.configurado() ? '<span class="ayuda">Se guarda en tu Google Drive, en la carpeta «Flexeo/Apuntes».</span>' : '<span class="ayuda">Modo prueba: el PDF se guarda solo en este dispositivo.</span>'}
       <div class="botones"><button type="button" class="btn" data-cerrar>Cancelar</button><button class="btn primario" id="a-subir">Subir</button></div>
     </form>`, (d) => {
@@ -87,9 +94,9 @@ function modalSubir() {
           archivoId = await G.subirGrande(`${titulo}.pdf`, pdf, 'application/pdf', dir);
         } else archivoId = 'local-' + S.nuevoId();
         try { await idbSet(`pdf-${archivoId}`, await pdf.arrayBuffer()); } catch {}
-        const e = { id: S.nuevoId(), archivoId, titulo, fuente: (v.fuente || '').trim(), emoji: v.emoji || '', temas: [].concat(v.temas || []), fecha: hoyISO() };
+        const e = { id: S.nuevoId(), archivoId, titulo, fuente: (v.fuente || '').trim(), emoji: v.emoji || '', temas: [].concat(v.temas || []), fichas: fichaId ? [fichaId] : [], fecha: hoyISO() };
         S.actualizar((s) => { s.apuntes.push(e); });
-        cerrarModal(); toast('PDF añadido a tu Biblioteca.'); irA(`#/biblioteca/a/${encodeURIComponent(e.id)}`);
+        cerrarModal(); toast('PDF añadido a tu Biblioteca.'); if (fichaId || temas.length) ctx.render(); else irA(`#/biblioteca/a/${encodeURIComponent(e.id)}`);
       });
     });
   });
@@ -204,7 +211,7 @@ function pantallaCompleta(doc, titulo) {
 }
 
 export const accionesBiblioteca = {
-  'ap-subir': () => modalSubir(),
+  'ap-subir': (b) => modalSubir({ temas: (b.dataset.temas || '').split('|').filter(Boolean), fichaId: b.dataset.ficha || '' }),
   'ap-tema': (b) => { tema = tema === b.dataset.v && !b.dataset.ir ? '' : b.dataset.v; if (b.dataset.ir) irA('#/biblioteca'); else ctx.render(); },
   'ap-editar': (b) => modalEditar(A().find((x) => x.id === b.dataset.id)),
   'ap-borrar': (b) => confirmar('¿Quitar de la Biblioteca?', G.configurado() ? 'Desaparece de la app. El PDF sigue en tu Drive, en la carpeta «Flexeo/Apuntes».' : 'Desaparece de la app y del dispositivo.', 'Quitar', () => {

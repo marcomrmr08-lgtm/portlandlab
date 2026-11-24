@@ -54,7 +54,7 @@ function completar(s) {
   if (!Array.isArray(s.borrados)) s.borrados = [];
   if (!Array.isArray(s.diario)) s.diario = [];
   if (!Array.isArray(s.apuntes)) s.apuntes = [];
-  for (const a of s.apuntes) { a.titulo = String(a.titulo || 'Sin título'); a.temas = Array.isArray(a.temas) ? a.temas : []; a.emoji = String(a.emoji || '').slice(0, 8); }
+  for (const a of s.apuntes) { a.titulo = String(a.titulo || 'Sin título'); a.temas = Array.isArray(a.temas) ? a.temas : []; a.emoji = String(a.emoji || '').slice(0, 8); a.fichas = Array.isArray(a.fichas) ? a.fichas.filter((x) => typeof x === 'string') : []; }
   for (const e of s.diario) { e.tipo = ['idea', 'reflexion', 'nota'].includes(e.tipo) ? e.tipo : 'reflexion'; e.procesos = Array.isArray(e.procesos) ? e.procesos : []; }
   s.portland = s.portland && typeof s.portland === 'object' ? s.portland : { notas: '' };
   delete s.grupos; delete s.grupoActivo;
