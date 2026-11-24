@@ -7,10 +7,11 @@ import { vLectura, accionesLecturas } from './lecturas.js';
 import * as DI from './diario.js';
 import * as H from './hexaflex.js';
 import * as B from './biblioteca.js';
+import { iniciarGuia } from './guia.js';
 import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal, abrirModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 await S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
@@ -103,6 +104,7 @@ function vAjustes() {
     <h2 class="etiqueta-grupo">Privacidad</h2>
     <section class="tarjeta">
       <p class="pequeno suave" style="line-height:1.5">Flexeo es para tu formación. No escribas nombres ni datos que permitan identificar a pacientes.</p>
+      <button class="btn" data-act="ver-guia">${icon('ayuda', 18)}Ver la guía de la app</button>
       <a class="btn" href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
       <a class="btn" href="condiciones.html" target="_blank" rel="noopener">Condiciones de la versión de prueba</a>
     </section>
@@ -139,8 +141,12 @@ async function modalRestaurar() {
 
 // ---------- Aviso de bienvenida: privacidad y condiciones de la prueba ----------
 const AVISO = '2026-11';
+function guiaPrimeraVez() {
+  if (LS.get('pl-guia') === '1') return;
+  iniciarGuia({ alAcabar: () => LS.set('pl-guia', '1') });
+}
 function avisoBienvenida() {
-  if (LS.get('pl-aviso') === AVISO) return;
+  if (LS.get('pl-aviso') === AVISO) { guiaPrimeraVez(); return; }
   const noCerrar = (e) => { if (document.getElementById('c-aviso')) e.preventDefault(); };
   const d = abrirModal(`<h2>Bienvenido a Flexeo</h2>
     <p class="suave" style="line-height:1.5">Es una <b>versión de prueba privada</b> para practicar y preparar tu trabajo con ACT. Antes de empezar:</p>
@@ -155,7 +161,7 @@ function avisoBienvenida() {
     <button type="button" class="btn primario" id="b-aviso" disabled>Empezar</button>`, (m) => {
     const c = m.querySelector('#c-aviso'); const b = m.querySelector('#b-aviso');
     c.addEventListener('change', () => { b.disabled = !c.checked; });
-    b.addEventListener('click', () => { LS.set('pl-aviso', AVISO); m.removeEventListener('cancel', noCerrar); cerrarModal(); });
+    b.addEventListener('click', () => { LS.set('pl-aviso', AVISO); m.removeEventListener('cancel', noCerrar); cerrarModal(); guiaPrimeraVez(); });
   });
   d.addEventListener('cancel', noCerrar);
 }
@@ -170,6 +176,7 @@ const acciones = {
   conectar: (b) => conCarga(b, async () => { await conectarYSincronizar(); toast('Conectado.'); render(); }),
   'sync-reintentar': () => subir(),
   restaurar: () => modalRestaurar(),
+  'ver-guia': () => iniciarGuia({ conPortada: false }),
   desconectar: async () => { await G.desconectar(); toast('Desconectado: la app ya no tiene permiso en tu Google.'); render(); },
   exportar: () => descargar(new Blob([JSON.stringify(S.datos(), null, 2)], { type: 'application/json' }), `flexeo-${new Date().toISOString().slice(0, 10)}.json`),
   'borrar-todo': () => confirmar('¿Cerrar sesión y borrar este dispositivo?', 'Se quita el permiso de la app en tu Google y se borra lo guardado aquí. Tus datos siguen en tu Drive y vuelven al conectar.', 'Cerrar sesión y borrar', async () => {
