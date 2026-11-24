@@ -580,3 +580,11 @@ button.estado-sync { cursor: pointer; }
 .ctrl:focus-visible, .chip-osc:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .practica { transition: none; } }
 a.seg-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; text-align: center; }
+
+/* Aviso de bienvenida y restaurar copia */
+.lista-aviso { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.45; }
+.casilla-aviso { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.casilla-aviso input { width: 20px; height: 20px; accent-color: var(--verde); }
+.lista-copias { display: flex; flex-direction: column; gap: 8px; }
+.lista-copias .btn { justify-content: flex-start; font-weight: 600; }
+a.estado-sync { text-decoration: none; }

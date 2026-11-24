@@ -7,11 +7,11 @@ import { vLectura, accionesLecturas } from './lecturas.js';
 import * as DI from './diario.js';
 import * as H from './hexaflex.js';
 import * as B from './biblioteca.js';
-import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal } from './ui.js';
+import { esc, fmtCorta, toast, conCarga, idbGet, idbSet, descargar, icon, cerrarModal, abrirModal } from './ui.js';
 import { ctx, app, irA, nav, volver, confirmar, NAV } from './comun.js';
 
-const VERSION = '1.4.2';
-S.cargar();
+const VERSION = '1.5.0';
+await S.cargar();
 
 // ======================= Sincronización de tus datos con Drive =======================
 let temporizador = null; let subiendo = false; let otraVez = false; let pendiente = false;
@@ -58,7 +58,12 @@ ctx.google = async () => { if (G.configurado() && !G.conectado()) await conectar
 ctx.conectado = () => G.conectado();
 
 // ---------- Indicador de guardado ----------
+S.siFallaElGuardado((f) => {
+  if (f) toast('No se ha podido guardar en este dispositivo. Descarga una copia de tus datos en Ajustes.', { error: true, ms: 12000 });
+  pintarEstado();
+});
 function barraEstado() {
+  if (S.hayFallo()) return '<a class="estado-sync aviso" href="#/ajustes"><i></i>No se pudo guardar en este dispositivo · Toca para ver qué hacer</a>';
   if (!G.configurado()) return '';
   if (G.conectado()) {
     if (subiendo || temporizador) return '<div class="estado-sync guardando" role="status"><i></i>Guardando en tu Drive…</div>';
@@ -90,12 +95,69 @@ function vAjustes() {
     <section class="tarjeta">${cuenta}</section>
     <h2 class="etiqueta-grupo">Datos</h2>
     <section class="tarjeta">
+      ${S.hayFallo() ? `<div class="aviso-caja">${icon('candado', 18)}<span><b>El último cambio no se pudo guardar en este dispositivo.</b> Puede que el almacenamiento esté lleno. Descarga una copia ahora y libera espacio en el móvil.</span></div>` : ''}
       <button class="btn" data-act="exportar">${icon('descargar', 18)}Descargar una copia de mis datos</button>
+      <button class="btn" data-act="restaurar">${icon('descargar', 18)}Restaurar una copia</button>
       <button class="btn peligro" data-act="borrar-todo">${icon('papelera', 18)}Cerrar sesión y borrar este dispositivo</button>
+    </section>
+    <h2 class="etiqueta-grupo">Privacidad</h2>
+    <section class="tarjeta">
+      <p class="pequeno suave" style="line-height:1.5">Flexeo es para tu formación. No escribas nombres ni datos que permitan identificar a pacientes.</p>
+      <a class="btn" href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
+      <a class="btn" href="condiciones.html" target="_blank" rel="noopener">Condiciones de la versión de prueba</a>
     </section>
     <p class="mini suave" style="text-align:center;line-height:1.5">Flexeo ${VERSION} · versión de prueba para uso personal<br>© 2026 Marco Martínez. Todos los derechos reservados.</p>
     </div>${nav('ajustes')}`,
   };
+}
+
+// ---------- Restaurar una copia (automática de este dispositivo o un archivo descargado) ----------
+async function modalRestaurar() {
+  let copias = [];
+  try { copias = (await idbGet('copias')) || []; } catch {}
+  const fecha = (t) => new Date(t).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  abrirModal(`<h2>Restaurar una copia</h2>
+    <p class="suave pequeno" style="line-height:1.5">Lo que tienes ahora se sustituye por la copia elegida. Antes, la app guarda una copia de lo actual por si quieres volver atrás.</p>
+    ${copias.length ? `<div class="lista-copias">${copias.map((c, i) => `<button type="button" class="btn" data-copia="${i}">${esc(fecha(c.fecha))} · ${esc(c.motivo || 'Copia automática')}</button>`).join('')}</div>` : '<p class="pequeno suave">Aún no hay copias automáticas en este dispositivo.</p>'}
+    <label class="btn" for="f-copia">Elegir un archivo descargado (.json)</label>
+    <input type="file" id="f-copia" accept="application/json,.json" hidden>
+    <button type="button" class="btn" data-cerrar>Cancelar</button>`, (d) => {
+    const aplicar = async (datos) => {
+      if (!S.esCopiaValida(datos)) { toast('Ese archivo no es una copia de Flexeo.', { error: true }); return; }
+      await guardarCopia('Antes de restaurar');
+      S.reemplazar(datos, { sincronizar: true });
+      cerrarModal(); toast('Copia restaurada.'); render();
+    };
+    d.querySelectorAll('[data-copia]').forEach((b) => b.addEventListener('click', () => aplicar(JSON.parse(JSON.stringify(copias[+b.dataset.copia].datos)))));
+    d.querySelector('#f-copia').addEventListener('change', async (e) => {
+      const f = e.target.files?.[0]; if (!f) return;
+      if (f.size > 50e6) { toast('El archivo es demasiado grande.', { error: true }); return; }
+      try { await aplicar(JSON.parse(await f.text())); } catch { toast('No se ha podido leer el archivo.', { error: true }); }
+    });
+  });
+}
+
+// ---------- Aviso de bienvenida: privacidad y condiciones de la prueba ----------
+const AVISO = '2026-11';
+function avisoBienvenida() {
+  if (LS.get('pl-aviso') === AVISO) return;
+  const noCerrar = (e) => { if (document.getElementById('c-aviso')) e.preventDefault(); };
+  const d = abrirModal(`<h2>Bienvenido a Flexeo</h2>
+    <p class="suave" style="line-height:1.5">Es una <b>versión de prueba privada</b> para practicar y preparar tu trabajo con ACT. Antes de empezar:</p>
+    <ul class="lista-aviso">
+      <li><b>Sin datos de pacientes.</b> No escribas nombres, iniciales, fechas ni detalles que permitan identificar a nadie. Flexeo no es una historia clínica.</li>
+      <li><b>Tus datos son tuyos.</b> Se guardan en este dispositivo y, si conectas Google, en tu propio Drive. Nadie más los ve, tampoco el autor de la app.</li>
+      <li><b>Es una prueba.</b> Puede tener fallos: descarga de vez en cuando una copia desde Ajustes.</li>
+      <li><b>Uso personal.</b> No copies ni compartas la app ni sus contenidos sin permiso.</li>
+    </ul>
+    <p class="pequeno suave">Más detalle en la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y las <a href="condiciones.html" target="_blank" rel="noopener">condiciones de la prueba</a>.</p>
+    <label class="casilla-aviso"><input type="checkbox" id="c-aviso" autofocus> He leído y acepto</label>
+    <button type="button" class="btn primario" id="b-aviso" disabled>Empezar</button>`, (m) => {
+    const c = m.querySelector('#c-aviso'); const b = m.querySelector('#b-aviso');
+    c.addEventListener('change', () => { b.disabled = !c.checked; });
+    b.addEventListener('click', () => { LS.set('pl-aviso', AVISO); m.removeEventListener('cancel', noCerrar); cerrarModal(); });
+  });
+  d.addEventListener('cancel', noCerrar);
 }
 
 // ======================= Acciones (clics) =======================
@@ -107,6 +169,7 @@ const acciones = {
   ...B.accionesBiblioteca,
   conectar: (b) => conCarga(b, async () => { await conectarYSincronizar(); toast('Conectado.'); render(); }),
   'sync-reintentar': () => subir(),
+  restaurar: () => modalRestaurar(),
   desconectar: async () => { await G.desconectar(); toast('Desconectado: la app ya no tiene permiso en tu Google.'); render(); },
   exportar: () => descargar(new Blob([JSON.stringify(S.datos(), null, 2)], { type: 'application/json' }), `flexeo-${new Date().toISOString().slice(0, 10)}.json`),
   'borrar-todo': () => confirmar('¿Cerrar sesión y borrar este dispositivo?', 'Se quita el permiso de la app en tu Google y se borra lo guardado aquí. Tus datos siguen en tu Drive y vuelven al conectar.', 'Cerrar sesión y borrar', async () => {
@@ -191,6 +254,7 @@ window.addEventListener('hashchange', () => { cerrarModal(); render(); window.sc
   if (!yaAbierta && location.hash !== '#/hexaflex') history.replaceState(null, '', '#/hexaflex');
 })();
 render();
+avisoBienvenida();
 guardarCopia('Al abrir la app', 6 * 3600e3);
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {

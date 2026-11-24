@@ -86,26 +86,66 @@ function completar(s) {
   return s;
 }
 
-export function cargar() {
-  try { estado = JSON.parse(localStorage.getItem(CLAVE)); } catch { estado = null; }
-  estado = completar(estado || porDefecto());
-  try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch {}
+// Guardado en el dispositivo: IndexedDB (sin el límite de ~5 MB de localStorage), con localStorage como respaldo.
+// Si algo falla, se avisa a la app para que lo muestre (nunca falla en silencio).
+let alFallar = null; let fallo = false;
+export function siFallaElGuardado(fn) { alFallar = fn; }
+export const hayFallo = () => fallo;
+function abrirDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('portland-lab', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('archivos');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function idbLeer() {
+  const db = await abrirDB();
+  return new Promise((res, rej) => { const q = db.transaction('archivos').objectStore('archivos').get(CLAVE); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+}
+async function idbEscribir(v) {
+  const db = await abrirDB();
+  return new Promise((res, rej) => { const tx = db.transaction('archivos', 'readwrite'); tx.objectStore('archivos').put(v, CLAVE); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error); });
+}
+let cola = Promise.resolve();
+function persistir() {
+  const texto = JSON.stringify(estado);
+  let okLS = true;
+  try { localStorage.setItem(CLAVE, texto); } catch { okLS = false; try { localStorage.removeItem(CLAVE); } catch {} }
+  cola = cola.then(() => idbEscribir(texto)).then(
+    () => { if (fallo) { fallo = false; alFallar?.(false); } },
+    (e) => { console.warn('No se pudo guardar en el dispositivo', e); if (!okLS) { fallo = true; alFallar?.(true); } },
+  );
+  return cola;
+}
+const leerJSON = (t) => { try { return t ? JSON.parse(t) : null; } catch { return null; } };
+export async function cargar() {
+  let deIDB = null; let deLS = null;
+  try { deIDB = leerJSON(await idbLeer()); } catch {}
+  try { deLS = leerJSON(localStorage.getItem(CLAVE)); } catch {}
+  // Se queda con la copia más reciente de las dos
+  const elegido = [deIDB, deLS].filter(Boolean).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0];
+  estado = completar(elegido || porDefecto());
+  persistir();
+  try { navigator.storage?.persist?.(); } catch {}
   return estado;
 }
 export const datos = () => estado;
 export function guardar() {
   estado.updatedAt = Date.now();
-  try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) { console.warn('No se pudo guardar en el dispositivo', e); }
+  persistir();
   alGuardar?.(estado);
 }
 export function actualizar(fn) { fn(estado); guardar(); }
 export function reemplazar(nuevo, { sincronizar = false } = {}) {
   estado = completar(nuevo);
-  try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch {}
+  if (sincronizar) estado.updatedAt = Date.now();
+  persistir();
   if (sincronizar) alGuardar?.(estado);
 }
 export function siempreAlGuardar(fn) { alGuardar = fn; }
 export function olvidarTodo() { try { localStorage.removeItem(CLAVE); } catch {} estado = completar(porDefecto()); }
+// Comprueba que un archivo de copia tiene pinta de ser de Flexeo
+export const esCopiaValida = (o) => !!o && typeof o === 'object' && !Array.isArray(o) && ('hexaflex' in o || 'diario' in o || 'estrategias' in o);
 
 // Junta dos copias (este dispositivo y Drive) sin perder nada de ninguna
 export function fusionar(local, remoto) {
